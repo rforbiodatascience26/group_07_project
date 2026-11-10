@@ -24,9 +24,9 @@ library(here)
 ```{r}
 #| message: false
 
-patients  <- read_tsv(here("_raw", "data_clinical_patient.txt"), comment = "#")
-samples   <- read_tsv(here("_raw", "data_clinical_sample.txt"),  comment = "#")
-mutations <- read_tsv(here("_raw", "data_mutations.txt")) |>
+patients  <- read_tsv(here("data\_raw", "data_clinical_patient.txt"), comment = "#")
+samples   <- read_tsv(here("data\_raw", "data_clinical_sample.txt"),  comment = "#")
+mutations <- read_tsv(here("data\_raw", "data_mutations.txt")) |>
   select(where(~ !all(is.na(.x))))        # drop empty rows
 
 ```
