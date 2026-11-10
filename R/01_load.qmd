@@ -1,0 +1,48 @@
+---
+title: "01_load"
+format: html
+editor: visual
+---
+
+
+## Aim of the file
+
+Read the raw data from _raw/ and write them as tsv files in the data/ folder,
+which prepares them for the data cleaning step.
+
+## Load Libraries
+
+```{r}
+#| message: false
+
+library(tidyverse)
+library(here)
+```
+
+## Load Data
+
+```{r}
+#| message: false
+
+patients  <- read_tsv(here("_raw", "data_clinical_patient.txt"), comment = "#")
+samples   <- read_tsv(here("_raw", "data_clinical_sample.txt"),  comment = "#")
+mutations <- read_tsv(here("_raw", "data_mutations.txt")) |>
+  select(where(~ !all(is.na(.x))))        # drop empty rows
+
+```
+
+## Data Check
+
+```{r}
+dim(patients)
+dim(samples)
+dim(mutations)
+```
+
+## Write Data
+
+```{r}
+write_tsv(patients,  here("data", "01_dat_load_patients.tsv"))
+write_tsv(samples,   here("data", "01_dat_load_samples.tsv"))
+write_tsv(mutations, here("data", "01_dat_load_mutations.tsv"))
+```
