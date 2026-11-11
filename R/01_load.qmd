@@ -4,11 +4,9 @@ format: html
 editor: visual
 ---
 
-
 ## Aim of the file
 
-Read the raw data from _raw/ and write them as tsv files in the data/ folder,
-which prepares them for the data cleaning step.
+Read the raw data from \_raw/ and write them as tsv files in the data/ folder, which prepares them for the data cleaning step.
 
 ## Load Libraries
 
@@ -24,9 +22,9 @@ library(here)
 ```{r}
 #| message: false
 
-patients  <- read_tsv(here("data\_raw", "data_clinical_patient.txt"), comment = "#")
-samples   <- read_tsv(here("data\_raw", "data_clinical_sample.txt"),  comment = "#")
-mutations <- read_tsv(here("data\_raw", "data_mutations.txt")) |>
+patients  <- read_tsv(here("data/_raw", "data_clinical_patient.txt"), comment = "#")
+samples   <- read_tsv(here("data/_raw", "data_clinical_sample.txt"),  comment = "#")
+mutations <- read_tsv(here("data/_raw", "data_mutations.txt")) |>
   select(where(~ !all(is.na(.x))))        # drop empty rows
 
 ```
