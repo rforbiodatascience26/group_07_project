@@ -1,0 +1,38 @@
+---
+title: "02_clean"
+format: html
+---
+
+## Cleaning patients data set
+
+### Extracting a list of patient ID from the mutations data set
+
+```{r}
+tumor_id <- mutations |> 
+              group_by(Tumor_Sample_Barcode) |> 
+              count() |> 
+              rename(Number_mutations = n)
+```
+
+```{r}
+tumor_id <- tumor_id |> 
+            separate_longer_position(Tumor_Sample_Barcode, width = 9) |> 
+            filter(str_detect(Tumor_Sample_Barcode, "P")) |> 
+            rename(PATIENT_ID = Tumor_Sample_Barcode)
+```
+Modifying the tumor bar code so that it matches the patient IDs format that are in the other two data sets we are working with.
+
+Extracting from patients the IDs that do not appear in mutations.
+
+```{r}
+patients_clean <- patients |> 
+                      inner_join(tumor_id, join_by("PATIENT_ID"))
+```
+Now the patient_clean contains the information relevant to the patients that are also mentioned in the mutation file and an additional column stating the number of mutations that patient has.
+
+```{r}
+samples_clean <- samples |>
+                    semi_join(tumor_id, by = "PATIENT_ID")
+```
+Same for samples data set.
+

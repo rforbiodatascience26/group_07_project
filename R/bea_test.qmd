@@ -2,4 +2,85 @@
 title: "bea_test"
 format: html
 ---
+#Looking at the data
+```{r}
+View(mutations)
+View(patients)
+View(samples)
+```
+
+```{r}
+patients |> 
+  filter(PATIENT_ID == "P-0024731")
+```
+```{r}
+mutations |> 
+  filter(str_detect(Tumor_Sample_Barcode,"P-0024731"))
+
+```
+So to each patient there corresponds a Tumor (at least one) to which is associated several mutations, in different places in the genome.
+
+```{r}
+mutations |> 
+  filter(str_detect(Tumor_Sample_Barcode,"P-0024731")) |> 
+  count()
+```
+```{r}
+tumor_id <- mutations |> 
+              group_by(Tumor_Sample_Barcode) |> 
+              count() |> 
+              select(Tumor_Sample_Barcode)
+```
+
+```{r}
+tumor_id <- tumor_id |> 
+            separate_longer_position(Tumor_Sample_Barcode, width = 9) |> 
+            filter(str_detect(Tumor_Sample_Barcode, "P")) |> 
+            rename(id = Tumor_Sample_Barcode)
+```
+
+```{r}
+patient_id <- 
+  patients|> 
+    select(PATIENT_ID) |> 
+    rename(id = PATIENT_ID)
+```
+
+```{r}
+dim(patient_id)
+dim(tumor_id)
+```
+Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to potentially eliminate them from the data set we want to work with in the end.
+
+```{r}
+patients_no_tumor <- patient_id |>
+                    anti_join(tumor_id, by = "id")
+View(patients_no_tumor)
+```
+
+```{r}
+dim(tumor_id)
+dim(patients)
+dim(patients_no_tumor)
+```
+So, based on this I could eliminate the patients which did not have tumors. But since the samples table has the same number of entries as the patients table, we need to look into it to understand why we have the samples we have.
+
+```{r}
+samples |> 
+  group_by(SAMPLE_CLASS) |> 
+  count()
+```
+All samples are listed as tumors...
+
+```{r}
+samples_no_tumor <- samples |> 
+                        anti_join(tumor_id, by = c("PATIENT_ID" = "id"))
+```
+
+```{r}
+patients_no_tumor |> 
+  anti_join(samples_no_tumor, by = c("id" = "PATIENT_ID"))
+```
+This confirms that the same data is missing from both sets. 
+
 
