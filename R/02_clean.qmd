@@ -3,36 +3,88 @@ title: "02_clean"
 format: html
 ---
 
+## Cleaning mutations to keep variables of interest
+
+Selecting variables of interest
+
+```{r}
+mutations_clean <- mutations |> 
+                      select(c("Tumor_Sample_Barcode",
+                               "Hugo_Symbol", 
+                               "Chromosome", 
+                               "Start_Position", 
+                               "End_Position", 
+                               "Strand", 
+                               "Consequence",
+                               "Variant_Type",
+                               "Mutation_Status"))
+```
+
+Splitting the Tumor_Sample_Barcode into a Patient_id matching the one in the other 2 tables and a Tumor_Barcode
+
+```{r}
+mutations_clean <- mutations_clean |> 
+                      mutate(Patient_id = str_sub(Tumor_Sample_Barcode, 
+                                                  start = 1, 
+                                                  end = 9)) |> 
+                      mutate(Tumor_Sample_Barcode = str_sub(Tumor_Sample_Barcode, 
+                                                            start = 11)) |> 
+                      rename(Tumor_Barcode = Tumor_Sample_Barcode) |> 
+                      relocate(Patient_id)
+```
+
 ## Cleaning patients data set
 
-### Extracting a list of patient ID from the mutations data set
-
-```{r}
-tumor_id <- mutations |> 
-              group_by(Tumor_Sample_Barcode) |> 
-              count() |> 
-              rename(Number_mutations = n)
-```
-
-```{r}
-tumor_id <- tumor_id |> 
-            separate_longer_position(Tumor_Sample_Barcode, width = 9) |> 
-            filter(str_detect(Tumor_Sample_Barcode, "P")) |> 
-            rename(PATIENT_ID = Tumor_Sample_Barcode)
-```
-Modifying the tumor bar code so that it matches the patient IDs format that are in the other two data sets we are working with.
-
-Extracting from patients the IDs that do not appear in mutations.
+Renaming Patient_id to match mutations column and modifying the way status is logged in the table.
 
 ```{r}
 patients_clean <- patients |> 
-                      inner_join(tumor_id, join_by("PATIENT_ID"))
+                      rename(Patient_id = PATIENT_ID) |> 
+                      mutate(Status = str_sub(OS_STATUS, 
+                                      start = 3),
+                             .keep = "unused")
 ```
-Now the patient_clean contains the information relevant to the patients that are also mentioned in the mutation file and an additional column stating the number of mutations that patient has.
+
+### Extracting a list of patient ID from the mutations data set to subset samples and patients
 
 ```{r}
-samples_clean <- samples |>
-                    semi_join(tumor_id, by = "PATIENT_ID")
+tumor_patient <- mutations_clean |> 
+                    group_by(Patient_id) |> 
+                    count() |> 
+                    rename(Number_mutations = n)
 ```
-Same for samples data set.
 
+Extracting rows corresponding to patients present in the mutations table and adding to patients_clean a column with number of mutations.
+
+```{r}
+patients_clean <- patients_clean |> 
+                      inner_join(tumor_patient, join_by("Patient_id"))
+```
+
+## Cleaning the samples data set
+
+Selecting variables of interest
+
+```{r}
+samples_clean <- samples |> 
+                    select(c("PATIENT_ID", 
+                             "SAMPLE_ID",
+                             "CANCER_TYPE",
+                             "SAMPLE_TYPE",
+                             "METASTATIC_SITE",
+                             "PRIMARY_SITE",
+                             "CANCER_TYPE_DETAILED",
+                             "SOMATIC_STATUS")) |> 
+                    rename(Patient_id = PATIENT_ID) |>                       
+                    mutate(Sample_Barcode = str_sub(SAMPLE_ID, 
+                                      start = 11),
+                             .keep = "unused")
+                    
+```
+
+Extracting rows corresponding to patients present in the mutations table.
+
+```{r}
+samples_clean <- samples_clean |>
+                    semi_join(tumor_id, by = "Patient_id")
+```
