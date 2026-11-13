@@ -1,0 +1,96 @@
+---
+title: "Luka_exporing_data"
+author: "Luka"
+format: html
+editor: visual
+---
+
+## Exploring data + wrangling
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+### Loading the loaded data
+
+```{r}
+#| message: FALSE
+patients <- read_tsv(here("data", "01_dat_load_patients.tsv"))
+samples <- read_tsv(here("data", "01_dat_load_samples.tsv"))
+mutations <- read_tsv(here("data", "01_dat_load_mutations.tsv"))
+```
+
+### Cleaning data?
+
+```{r}
+patients |> view()
+samples |> view()
+mutations |> view()
+```
+
+### Combining some data
+
+```{r}
+survival_table <- full_join(patients,samples, by = 'PATIENT_ID')
+survival_table |> select('PATIENT_ID','OS_STATUS','CANCER_TYPE', 'SEX','OS_MONTHS')
+
+survival_table
+```
+
+```{r}
+g1 <- ggplot(data = survival_table,
+            mapping = aes(y = CANCER_TYPE,
+                          x = OS_MONTHS,
+                          color = SEX)) + 
+  geom_boxplot()
+g1
+```
+
+Calculate the percent of survival for each cancer type
+
+```{r}
+survival_percentage <- survival_table |> 
+  group_by(CANCER_TYPE, SEX) |> 
+  summarise(number_of_patients = n(),
+  average_survival = mean(OS_MONTHS, na.rm = TRUE),
+  alive = sum(OS_STATUS == '0:LIVING', na.rm = TRUE),
+  survival_percent = alive / number_of_patients * 100)
+
+g2 <- ggplot(data = survival_percentage,
+             mapping = aes(x = CANCER_TYPE,
+                           y = survival_percent,
+                           fill = SEX)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Cancer type',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75))
+g2
+
+```
+
+```{r}
+survival_percentage <- survival_table |> 
+  group_by(SEX) |> 
+  summarise(
+    number_of_patients = n(),
+    alive = sum(OS_STATUS == '0:LIVING', na.rm = TRUE),
+    survival_percent = alive / number_of_patients * 100)
+g3 <- ggplot(data = survival_percentage,
+             mapping = aes(x = SEX,
+                           y = survival_percent,
+                           fill = SEX)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Sex',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75))
+g3
+```
