@@ -1,0 +1,60 @@
+---
+title: "data_wrangling"
+format: html
+---
+
+# Exploring and wrangling data
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+### Viewing the 3 data sets
+
+```{r}
+View(mutations)
+View(patients)
+View(samples)
+```
+
+### Combining the 3 data sets
+
+```{r}
+combined_data <- mutations |> 
+  left_join(samples,
+            by = c("Tumor_Sample_Barcode" = "SAMPLE_ID")) |> 
+  left_join(patients,
+            by = c("PATIENT_ID"))
+```
+
+### Selecting interesting columns from the 3 data sets
+
+```{r}
+combined_data <- combined_data |> 
+  select(AGE_GROUP,
+         AGE_AT_SEQ_REPORT,
+         SEX,
+         OS_STATUS,
+         CANCER_TYPE,
+         PRIMARY_SITE,
+         SAMPLE_TYPE,
+         DRUG_TYPE,
+         Chromosome,
+         Start_Position,
+         End_Position,
+         Protein_position,
+         Variant_Classification
+         )
+
+View(combined_data)
+```
+
+### Exploring plots
+
+```{r}
+ggplot(data = combined_data,
+       aes(x = CANCER_TYPE,
+           fill = SEX)) +
+    geom_bar()
+```
