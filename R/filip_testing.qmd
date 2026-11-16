@@ -1,0 +1,113 @@
+---
+title: "Filip_testing"
+author: "Filipos"
+format: html
+editor: visual
+---
+
+### Delete this file before merging probably!
+
+### Load Libraries
+
+```{r}
+#| message: false
+
+library(tidyverse)
+library(here)
+```
+
+### Loading the data
+
+```{r}
+
+patients <- read_tsv(here("data", "01_dat_load_patients.tsv")) 
+samples <- read_tsv(here("data", "01_dat_load_samples.tsv")) 
+mutations <- read_tsv(here("data", "01_dat_load_mutations.tsv"))
+```
+
+### Data Inspection
+
+```{r}
+# Overview of dimensions and column types
+glimpse(patients)
+glimpse(samples)
+glimpse(mutations)
+
+# Group patients by category
+patients |> count(AGE_GROUP, SEX, OS_STATUS, DRUG_TYPE)
+
+# Check if these columns are constant in samples
+samples |> count(SAMPLE_CLASS, INSTITUTE, SOMATIC_STATUS)
+
+# Check remaining categorical columns in samples
+samples |>
+  select(SAMPLE_TYPE, METASTATIC_SITE, GENE_PANEL) |>
+  map(table, useNA = "ifany")
+
+# Check constant/status columns in mutations
+mutations |>
+  select(Center, NCBI_Build, Variant_Classification, Variant_Type, Validation_Status, Mutation_Status) |>
+  map(table, useNA = "ifany")
+```
+
+### Cleaning Code for the three tables
+
+```{r}
+# 1. Clean patients (keeping original column names)
+patients_clean <- patients |>
+  separate_wider_delim(
+    OS_STATUS,
+    delim = ":",
+    names = c("OS_EVENT", "OS_STATUS")
+  ) |>
+  mutate(
+    OS_EVENT  = as.integer(OS_EVENT),
+    OS_STATUS = str_to_lower(OS_STATUS),
+    SEX       = factor(SEX),
+    AGE_GROUP = factor(AGE_GROUP, levels = c("<30", "31-50", "50-60", "61-70", ">71")),
+    DRUG_TYPE = factor(DRUG_TYPE)
+  )
+
+# 2. Clean samples (keeping original column names, converting "default" to NA first)
+samples_clean <- samples |>
+  mutate(
+    METASTATIC_SITE = if_else(
+      METASTATIC_SITE %in% c("Not Applicable", "Not available"),
+      NA_character_,
+      str_to_title(METASTATIC_SITE)
+    ),
+    METASTATIC_SITE = str_replace(METASTATIC_SITE, "Lypmh", "Lymph"),
+    TUMOR_PURITY    = as.numeric(if_else(TUMOR_PURITY %in% c("default", "N/A"), NA_character_, TUMOR_PURITY)),
+    GENE_PANEL      = factor(GENE_PANEL),
+    SAMPLE_TYPE     = factor(SAMPLE_TYPE),
+    SOMATIC_STATUS  = factor(SOMATIC_STATUS)
+  ) |>
+  select(-SAMPLE_CLASS, -INSTITUTE)
+
+# 3. Clean mutations (keeping original column names)
+mutations_clean <- mutations |>
+  mutate(
+    Mutation_Status = na_if(Mutation_Status, "UNKNOWN")
+  ) |>
+  select(-Center, -NCBI_Build, -Validation_Status, -Score, -ALLELE_NUM, -IS_NEW)
+```
+
+### Cleaning Verification
+
+```{r}
+# 1. Verify AGE_GROUP factor levels didn't create unexpected NAs
+patients_clean |> count(AGE_GROUP)
+
+# 2. Verify structure and types of all three cleaned tables
+glimpse(patients_clean)
+glimpse(samples_clean)
+glimpse(mutations_clean)
+```
+
+### Save Clean Data
+
+```{r}
+write_tsv(patients_clean,  here("data", "02_dat_clean_patients.tsv"))
+write_tsv(samples_clean,   here("data", "02_dat_clean_samples.tsv"))
+write_tsv(mutations_clean, here("data", "02_dat_clean_mutations.tsv"))
+```
