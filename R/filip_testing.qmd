@@ -111,3 +111,37 @@ write_tsv(patients_clean,  here("data", "02_dat_clean_patients.tsv"))
 write_tsv(samples_clean,   here("data", "02_dat_clean_samples.tsv"))
 write_tsv(mutations_clean, here("data", "02_dat_clean_mutations.tsv"))
 ```
+
+# Data wrangling
+
+```{r}
+# Pick 5 major cancer driver genes to investigate
+target_genes <- c("TP53", "KRAS", "PIK3CA", "BRAF", "PTEN")
+
+# Filter mutations_clean to only those 5 genes and keep unique sample-gene pairs
+# (distinct prevents counting a patient twice if they have 2 mutations in TP53)
+gene_status <- mutations_clean |>
+  filter(Hugo_Symbol %in% target_genes) |>
+  distinct(Tumor_Sample_Barcode, Hugo_Symbol) |>
+  mutate(MUTATED = "Mutated")
+
+# Join patients_clean and samples_clean first (1-to-1 by PATIENT_ID)
+# Then join with every combination of sample and target gene so unmutated patients get "Wild-Type"
+gene_survival <- patients_clean |>
+  inner_join(samples_clean, by = "PATIENT_ID") |>
+  crossing(Hugo_Symbol = target_genes) |>
+  left_join(gene_status, by = c("SAMPLE_ID" = "Tumor_Sample_Barcode", "Hugo_Symbol")) |>
+  mutate(MUTATED = replace_na(MUTATED, "Wild-Type"))
+
+# Survival time (OS_MONTHS) for Mutated vs. Wild-Type across each gene
+ggplot(gene_survival, aes(x = MUTATED, y = OS_MONTHS, fill = MUTATED)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ Hugo_Symbol, nrow = 1) +
+  labs(
+    title = "Overall Survival by Driver Gene Mutation Status",
+    x = NULL,
+    y = "Overall Survival (Months)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
