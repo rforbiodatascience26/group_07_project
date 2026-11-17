@@ -101,6 +101,16 @@ patients_clean <- patients_clean |>
                       inner_join(tumor_patient, join_by("patient_id"))
 ```
 
+```{r}
+patients_clean <- patients_clean |> 
+                    mutate(age_group = factor(AGE_GROUP,
+                                              levels = c("<30",
+                                                        "31-50",
+                                                        "50-60",
+                                                        "61-70",
+                                                        ">71")))
+```
+
 ## Cleaning the samples data set
 
 Selecting variables of interest
@@ -135,7 +145,4 @@ samples_clean <- samples_clean |>
                     semi_join(tumor_patient, by = "patient_id")
 ```
 
-```{r}
-mutation_augment <- mutations_clean |> 
-                        mutate(length_mutation = End_Position-Start_Position)
-```
+
