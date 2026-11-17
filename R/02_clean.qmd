@@ -104,7 +104,6 @@ patient_id <-
 
 ```{r}
 dim(patient_id)
-dim(tumor_id)
 ```
 
 Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to eliminate them from the data set we want to work with in the end.
@@ -168,8 +167,7 @@ cancer_clean <- patients_clean |>
 
 ## Save clean data and tidy the environment
 
-Rename the two tables for the next steps, save them, and remove everything
-else from the environment, so that it's not too cluttered
+Rename the two tables for the next steps and save them
 
 ```{r}
 clinical <- cancer_clean
@@ -178,9 +176,13 @@ mutations <- mutations_clean
 save(clinical,
      mutations,
      file = here("data", "02_cancer_clean.RData"))
+```
+Remove everything else from the environment, so that it's not too cluttered
 
+```{r}
 rm(list = setdiff(ls(),
                   c("clinical",
                     "mutations")))
 ```
+
 

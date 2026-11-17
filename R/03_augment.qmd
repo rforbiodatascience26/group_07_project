@@ -9,7 +9,61 @@ format: html
 load(here("data", "02_cancer_clean.RData"))
 ```
 
+
+## Top mutated genes
+
+For each gene, count how many different samples carry at least one mutation
+in it. A sample with several mutations in the same gene counts only once.
+
 ```{r}
-mutation_augment <- mutations |> 
-                        mutate(length_mutation = End_Position-Start_Position)
+n_samples = nrow(clinical)
+
+gene_mutation_freq <- mutations |>
+  distinct(patient_id,
+           tumor_barcode,
+           hugo_symbol) |>
+  count(hugo_symbol,
+        name = "n_mutated_samples") |>
+  mutate(pct_mutated_samples = n_mutated_samples / n_samples * 100,
+         gene_rank = row_number(desc(n_mutated_samples))) |>
+  arrange(gene_rank)
+```
+
+Plot the mutation frequency distribution with gene rank, to choose how many
+genes to keep for our further analysis.
+
+```{r}
+gene_mutation_freq |>
+  filter(gene_rank <= 100) |>
+  ggplot(aes(x = gene_rank,
+             y = pct_mutated_samples)) +
+  geom_line() +
+  geom_point(size = 0.8) +
+  geom_vline(xintercept = 20,
+             linetype = "dashed") +
+  theme_bw() +
+  labs(x = "Gene rank",
+       y = "Samples with a mutation (in %)",
+       title = "Mutation frequency of the 100 most mutated genes")
+```
+
+The curves starts to flatten and decrease very slowly after ran 20, so we have
+chosen to focus on the top 20 genes only.
+
+```{r}
+n_top_genes <- 20
+
+top_genes <- gene_mutation_freq |>
+  filter(gene_rank <= n_top_genes) |>
+  pull(hugo_symbol)
+
+top_genes
+```
+
+Add the mutation length and a flag for our list of "top genes".
+
+```{r}
+mutation_augment <- mutations |>
+  mutate(length_mutation = end_position - start_position,
+         is_top_gene = hugo_symbol %in% top_genes)
 ```
