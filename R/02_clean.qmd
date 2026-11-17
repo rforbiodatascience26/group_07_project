@@ -24,13 +24,13 @@ Splitting the Tumor_Sample_Barcode into a Patient_id matching the one in the oth
 
 ```{r}
 mutations_clean <- mutations_clean |> 
-                      mutate(Patient_id = str_sub(Tumor_Sample_Barcode, 
+                      mutate(patient_id = str_sub(Tumor_Sample_Barcode, 
                                                   start = 1, 
                                                   end = 9)) |> 
                       mutate(Tumor_Sample_Barcode = str_sub(Tumor_Sample_Barcode, 
                                                             start = 11)) |> 
-                      rename(Tumor_Barcode = Tumor_Sample_Barcode) |> 
-                      relocate(Patient_id)
+                      rename(tumor_barcode = Tumor_Sample_Barcode) |> 
+                      relocate(patient_id)
 ```
 
 ## Cleaning patients data set
@@ -39,8 +39,8 @@ Renaming Patient_id to match mutations column and modifying the way status is lo
 
 ```{r}
 patients_clean <- patients |> 
-                      rename(Patient_id = PATIENT_ID) |> 
-                      mutate(Status = str_sub(OS_STATUS, 
+                      rename(patient_id = PATIENT_ID) |> 
+                      mutate(status = str_sub(OS_STATUS, 
                                       start = 3),
                              .keep = "unused")
 ```
@@ -49,16 +49,16 @@ patients_clean <- patients |>
 
 ```{r}
 tumor_patient <- mutations_clean |> 
-                    group_by(Patient_id) |> 
+                    group_by(patient_id) |> 
                     count() |> 
-                    rename(Number_mutations = n)
+                    rename(number_mutations = n)
 ```
 
 Extracting rows corresponding to patients present in the mutations table and adding to patients_clean a column with number of mutations.
 
 ```{r}
 patients_clean <- patients_clean |> 
-                      inner_join(tumor_patient, join_by("Patient_id"))
+                      inner_join(tumor_patient, join_by("patient_id"))
 ```
 
 ## Cleaning the samples data set
@@ -75,8 +75,8 @@ samples_clean <- samples |>
                              "PRIMARY_SITE",
                              "CANCER_TYPE_DETAILED",
                              "SOMATIC_STATUS")) |> 
-                    rename(Patient_id = PATIENT_ID) |>                       
-                    mutate(Sample_Barcode = str_sub(SAMPLE_ID, 
+                    rename(patient_id = PATIENT_ID) |>                       
+                    mutate(sample_barcode = str_sub(SAMPLE_ID, 
                                       start = 11),
                              .keep = "unused")
                     
@@ -86,5 +86,10 @@ Extracting rows corresponding to patients present in the mutations table.
 
 ```{r}
 samples_clean <- samples_clean |>
-                    semi_join(tumor_id, by = "Patient_id")
+                    semi_join(tumor_patient, by = "patient_id")
+```
+
+```{r}
+mutation_augment <- mutations_clean |> 
+                        mutate(length_mutation = End_Position-Start_Position)
 ```
