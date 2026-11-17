@@ -147,5 +147,21 @@ cancer_clean <- patients_clean |>
                       inner_join(samples_clean, join_by("patient_id"))
 ```
 
+## Save clean data and tidy the environment
 
+Rename the two tables for the next steps, save them, and remove everything
+else from the environment, so that it's not too cluttered
+
+```{r}
+clinical <- cancer_clean
+mutations <- mutations_clean
+
+save(clinical,
+     mutations,
+     file = here("data", "02_cancer_clean.RData"))
+
+rm(list = setdiff(ls(),
+                  c("clinical",
+                    "mutations")))
+```
 
