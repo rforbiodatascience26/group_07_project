@@ -6,6 +6,7 @@ format: html
 ### Loading libraries
 
 ```{r}
+#| message: false
 library(tidyverse)
 library(here)
 ```
