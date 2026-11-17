@@ -60,6 +60,15 @@ patients_clean <- patients |>
                              .keep = "unused")
 ```
 
+```{r}
+patients_clean <- patients_clean |> 
+                    mutate(age_group = factor(age_group,
+                                              levels = c("<30",
+                                                        "31-50",
+                                                        "50-60",
+                                                        "61-70",
+                                                        ">71")))
+```
 ### Compairing patients list to mutations 
 
 Selecting one patient (chosen randomly)
@@ -99,16 +108,6 @@ Extracting rows corresponding to patients present in the mutations table and add
 ```{r}
 patients_clean <- patients_clean |> 
                       inner_join(tumor_patient, join_by("patient_id"))
-```
-
-```{r}
-patients_clean <- patients_clean |> 
-                    mutate(age_group = factor(AGE_GROUP,
-                                              levels = c("<30",
-                                                        "31-50",
-                                                        "50-60",
-                                                        "61-70",
-                                                        ">71")))
 ```
 
 ## Cleaning the samples data set
