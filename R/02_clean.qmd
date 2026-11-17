@@ -114,7 +114,4 @@ samples_clean <- samples_clean |>
                     semi_join(tumor_patient, by = "patient_id")
 ```
 
-```{r}
-mutation_augment <- mutations_clean |> 
-                        mutate(length_mutation = End_Position-Start_Position)
-```
+

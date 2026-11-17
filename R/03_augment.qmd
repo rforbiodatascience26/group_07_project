@@ -1,0 +1,9 @@
+---
+title: "03_augment"
+format: html
+---
+
+```{r}
+mutation_augment <- mutations_clean |> 
+                        mutate(length_mutation = End_Position-Start_Position)
+```
