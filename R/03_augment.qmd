@@ -3,7 +3,13 @@ title: "03_augment"
 format: html
 ---
 
+## Load data from step 2
+
 ```{r}
-mutation_augment <- mutations_clean |> 
+load(here("data", "02_cancer_clean.RData"))
+```
+
+```{r}
+mutation_augment <- mutations |> 
                         mutate(length_mutation = End_Position-Start_Position)
 ```
