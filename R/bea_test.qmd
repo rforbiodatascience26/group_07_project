@@ -25,6 +25,7 @@ mutations |>
   filter(str_detect(Tumor_Sample_Barcode,"P-0024731")) |> 
   count()
 ```
+
 ```{r}
 tumor_id <- mutations |> 
               group_by(Tumor_Sample_Barcode) |> 
