@@ -1,0 +1,19 @@
+---
+title: "05_analysis"
+format: html
+---
+
+### Loading libraries
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+### Loading the data
+
+Uses the one created in the end of the 02_clean file
+
+```{r}
+load(here("data", "02_cancer_clean.RData"))
+```
