@@ -30,7 +30,16 @@ mutations_clean <- mutations_clean |>
                       mutate(Tumor_Sample_Barcode = str_sub(Tumor_Sample_Barcode, 
                                                             start = 11)) |> 
                       rename(tumor_barcode = Tumor_Sample_Barcode) |> 
-                      relocate(patient_id)
+                      relocate(patient_id) |> 
+                      rename(hugo_symbol = Hugo_Symbol,
+                             chromosome = Chromosome,
+                             start_position = Start_Position,
+                             end_position = End_Position,
+                             strand = Strand,
+                             consequence = Consequence,
+                             variant_type = Variant_Type,
+                             mutation_status = Mutation_Status) |> 
+                      select(-strand) 
 ```
 
 ## Cleaning patients data set
@@ -50,19 +59,23 @@ patients_clean <- patients |>
                              .keep = "unused")
 ```
 
-### Compairing patients list to mutations 
+### Compairing patients list to mutations
 
 Selecting one patient (chosen randomly)
+
 ```{r}
 patients |> 
   filter(PATIENT_ID == "P-0024731")
 ```
+
 Looking at all the tumors linked to this patient in the mutations data set.
+
 ```{r}
 mutations |> 
   filter(str_detect(Tumor_Sample_Barcode,"P-0024731"))
 
 ```
+
 ```{r}
 patient_id <- 
   patients|> 
@@ -74,9 +87,11 @@ patient_id <-
 dim(patient_id)
 dim(tumor_id)
 ```
-Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to  eliminate them from the data set we want to work with in the end.
+
+Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to eliminate them from the data set we want to work with in the end.
 
 ### Extracting a list of patient ID from the mutations data set to subset samples and patients
+
 ```{r}
 tumor_patient <- mutations_clean |> 
                     group_by(patient_id) |> 
