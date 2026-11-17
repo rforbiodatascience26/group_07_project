@@ -102,9 +102,6 @@ patient_id <-
     rename(id = PATIENT_ID)
 ```
 
-```{r}
-dim(patient_id)
-```
 
 Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to eliminate them from the data set we want to work with in the end.
 
@@ -118,6 +115,11 @@ tumor_patient <- mutations_clean |>
 ```
 
 Extracting rows corresponding to patients present in the mutations table and adding to patients_clean a column with number of mutations.
+
+```{r}
+dim(patient_id)
+dim(tumor_patient)
+```
 
 ```{r}
 patients_clean <- patients_clean |> 
@@ -158,6 +160,17 @@ samples_clean <- samples_clean |>
                     semi_join(tumor_patient, by = "patient_id")
 ```
 
+Count the occurrences of the same cancer type and its percentages
+```{r}
+samples_clean |> 
+  count(cancer_type, name = "n", sort = TRUE) |> 
+  mutate(
+    percentage = round(n / sum(n) * 100, 1)
+  )
+
+```
+
+
 Joint tables patients and samples table
 
 ```{r}
@@ -184,5 +197,4 @@ rm(list = setdiff(ls(),
                   c("clinical",
                     "mutations")))
 ```
-
 
