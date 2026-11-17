@@ -1,0 +1,11 @@
+---
+title: "03_augment"
+format: html
+---
+
+## Load data from step 2
+
+```{r}
+load(here("data", "02_cancer_clean.RData"))
+```
+
