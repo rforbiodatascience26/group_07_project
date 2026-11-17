@@ -1,0 +1,91 @@
+---
+title: "project_07_presentation"
+authors: ...
+format: 
+  revealjs:
+    theme: solarized
+    slide-number: true
+editor: visual
+---
+
+## Introduction
+
+**Data used:**
+
+TMB and Immunotherapy from cBioPortal for cancer genomics
+
+by (MSK, Nat Genet 2019)
+
+[![cBioPortal logo](images/clipboard-3840736939.png)](https://www.cbioportal.org/datasets)
+
+## Materials and Methods
+
+3 files:
+
+-   Patient data
+
+-   Sample data
+
+-   Mutation data
+
+1661 patients represented in data set
+
+## Data wrangling
+
+::: column
+-   Selected interesting columns to work with
+
+-   Renamed columns using "snake_case"
+
+-   Creating age groups
+
+-   Joining patients and samples table
+:::
+
+::: column
+``` r
+patients_clean <- patients_clean |> 
+                    mutate(age_group = factor(age_group,
+                                              levels = c("<30",
+                                                        "31-50",
+                                                        "50-60",
+                                                        "61-70",
+                                                        ">71")))
+```
+:::
+
+## Data augmentation
+
+**Mutation placement**
+
+2 columns: "end_position" and "start_position" -\> length_mutation
+
+``` r
+mutation_augment <- mutations |>
+  mutate(length_mutation = end_position - start_position,
+         is_top_gene = hugo_symbol %in% top_genes)
+```
+
+## Results
+
+Should be seeing results slide
+
+-   What have we done? How does our final data set look?
+
+-   What can we use this data for? (show plots on next slide)
+
+## Data representation
+
+Put different interesting and aesthetically pleasing plots here
+
+Possibly add more slides if we have a lot of plots we want to show off
+
+## Discussion
+
+Should be seeing discussion slide
+
+-   What else could we have done?
+
+-   Have we represented the data in the best possible way?
+
+-   Are our results wierd in any way? how and why?
