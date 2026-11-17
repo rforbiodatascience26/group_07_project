@@ -29,6 +29,60 @@ samples |> view()
 mutations |> view()
 ```
 
+```{r}
+patients <- patients |> 
+  mutate(OS_STATUS = case_when(
+    OS_STATUS == '1:DECEASED' ~ 'DECEASED',
+    OS_STATUS == '0:LIVING' ~ 'LIVING'
+  ))
+
+patients
+```
+
+#### Renaming the data columns 
+
+```{r}
+patients_rename <- patients |> 
+  rename (
+    Patient_ID = PATIENT_ID,
+    Sex = SEX,
+    Os_Months = OS_MONTHS,
+    Os_Status = OS_STATUS,
+    Age_Group =  AGE_GROUP,
+    Drug_Type = DRUG_TYPE
+  )
+```
+
+```{r}
+patients_rename
+```
+
+```{r}
+samples_rename <- samples |> 
+  rename(
+    Patient_ID = PATIENT_ID,
+    Sample_ID = SAMPLE_ID,
+    Cancer_Type = CANCER_TYPE,
+    Sample_Type = SAMPLE_TYPE,
+    Sample_Class = SAMPLE_CLASS,
+    Metastatic_Site = METASTATIC_SITE,
+    Primary_Site = PRIMARY_SITE,
+    Cancer_Type_Detailed = CANCER_TYPE_DETAILED,
+    Gene_Panel = GENE_PANEL,
+    Sample_coverage = SAMPLE_COVERAGE,
+    Tumor_Purity = TUMOR_PURITY,
+    Oncotree_Code = ONCOTREE_CODE,
+    Institute = INSTITUTE,
+    Somatic_Status = SOMATIC_STATUS,
+    Age_At_Seq_Report = AGE_AT_SEQ_REPORT,
+    TMB_Nonsynonymous = TMB_NONSYNONYMOUS
+  )
+```
+
+```{r}
+samples_rename
+```
+
 ### Combining some data
 
 ```{r}
@@ -54,7 +108,7 @@ survival_percentage <- survival_table |>
   group_by(CANCER_TYPE, SEX) |> 
   summarise(number_of_patients = n(),
   average_survival = mean(OS_MONTHS, na.rm = TRUE),
-  alive = sum(OS_STATUS == '0:LIVING', na.rm = TRUE),
+  alive = sum(OS_STATUS == 'LIVING', na.rm = TRUE),
   survival_percent = alive / number_of_patients * 100)
 
 g2 <- ggplot(data = survival_percentage,
@@ -78,7 +132,7 @@ survival_percentage <- survival_table |>
   group_by(SEX) |> 
   summarise(
     number_of_patients = n(),
-    alive = sum(OS_STATUS == '0:LIVING', na.rm = TRUE),
+    alive = sum(OS_STATUS == 'LIVING', na.rm = TRUE),
     survival_percent = alive / number_of_patients * 100)
 g3 <- ggplot(data = survival_percentage,
              mapping = aes(x = SEX,
