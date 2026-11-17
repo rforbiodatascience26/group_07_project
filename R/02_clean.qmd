@@ -39,8 +39,13 @@ Renaming Patient_id to match mutations column and modifying the way status is lo
 
 ```{r}
 patients_clean <- patients |> 
-                      rename(patient_id = PATIENT_ID) |> 
-                      mutate(status = str_sub(OS_STATUS, 
+                      rename(patient_id = PATIENT_ID,
+                             sex = SEX,
+                             os_months = OS_MONTHS,
+                             os_status = OS_STATUS,
+                             age_group =  AGE_GROUP,
+                             drug_type = DRUG_TYPE) |> 
+                     mutate(status = str_sub(os_status, 
                                       start = 3),
                              .keep = "unused")
 ```
@@ -111,6 +116,12 @@ Extracting rows corresponding to patients present in the mutations table.
 
 ```{r}
 samples_clean <- samples_clean |>
+                    rename(cancer_type = CANCER_TYPE,
+                           sample_type = SAMPLE_TYPE,
+                           metastatic_site = METASTATIC_SITE,
+                           primary_site = PRIMARY_SITE,
+                           cancer_type_detailed = CANCER_TYPE_DETAILED,
+                           somatic_status = SOMATIC_STATUS) |> 
                     semi_join(tumor_patient, by = "patient_id")
 ```
 
