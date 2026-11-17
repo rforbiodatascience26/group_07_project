@@ -3,6 +3,16 @@ title: "02_clean"
 format: html
 ---
 
+## Load data
+
+```{r}
+#| message: false
+patients  <- read_tsv(here("data", "01_patients.tsv"))
+samples   <- read_tsv(here("data", "01_samples.tsv"))
+mutations <- read_tsv(here("data", "01_mutations.tsv"))
+```
+
+
 ## Cleaning mutations to keep variables of interest
 
 Selecting variables of interest

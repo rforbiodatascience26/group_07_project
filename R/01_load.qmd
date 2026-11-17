@@ -40,7 +40,7 @@ dim(mutations)
 ## Write Data
 
 ```{r}
-write_tsv(patients,  here("data", "01_dat_load_patients.tsv"))
-write_tsv(samples,   here("data", "01_dat_load_samples.tsv"))
-write_tsv(mutations, here("data", "01_dat_load_mutations.tsv"))
+write_tsv(patients,  here("data", "01_patients.tsv"))
+write_tsv(samples,   here("data", "01_samples.tsv"))
+write_tsv(mutations, here("data", "01_mutations.tsv"))
 ```
