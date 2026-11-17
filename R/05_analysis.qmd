@@ -18,3 +18,5 @@ Uses the one created in the end of the 02_clean file
 ```{r}
 load(here("data", "02_cancer_clean.RData"))
 ```
+
+did it work? can you see this?
