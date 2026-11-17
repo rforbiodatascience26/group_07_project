@@ -67,3 +67,63 @@ mutation_augment <- mutations |>
   mutate(length_mutation = end_position - start_position,
          is_top_gene = hugo_symbol %in% top_genes)
 ```
+
+## Gene Matrix of top 20 genes
+
+Reshape the mutation_augment list from a long format into a wide table so that
+each row represents one unique tumor sample and each of the 20 genes becomes
+its own dedicated column.
+
+```{r}
+gene_matrix <- mutation_augment |>
+  filter(hugo_symbol %in% top_genes) |>
+  count(patient_id, tumor_barcode, hugo_symbol, name = "n_mut") |>
+  pivot_wider(
+    names_from = hugo_symbol,
+    values_from = n_mut,
+    names_prefix = "num_mut_",
+    values_fill = 0
+  )
+```
+
+## New table named clinical_augment (gene_matrix merged onto clinical)
+
+Keep the samples with no mutation rows and give them 0
+
+```{r}
+clinical_augment <- clinical |>
+  left_join(
+    gene_matrix,
+    by = c("patient_id" = "patient_id", "sample_barcode" = "tumor_barcode")
+  ) |>
+  mutate(across(starts_with("num_mut_"), ~ replace_na(.x, 0)))
+```
+
+Calculate total number of mutations per sample and number of distinct mutated genes
+from mutation_augment and join them onto clinical_augment
+
+```{r}
+sample_mut_summary <- mutation_augment |>
+  group_by(patient_id, tumor_barcode) |>
+  summarise(
+    total_mutations = n(),
+    n_distinct_genes = n_distinct(hugo_symbol),
+    .groups = "drop"
+  )
+
+clinical_augment <- clinical_augment |>
+  left_join(
+    sample_mut_summary,
+    by = c("patient_id" = "patient_id", "sample_barcode" = "tumor_barcode")
+  ) |>
+  mutate(
+    total_mutations = replace_na(total_mutations, 0),
+    n_distinct_genes = replace_na(n_distinct_genes, 0)
+  )
+```
+
+
+
+
+
+
