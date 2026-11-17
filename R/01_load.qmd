@@ -4,11 +4,9 @@ format: html
 editor: visual
 ---
 
-
 ## Aim of the file
 
-Read the raw data from _raw/ and write them as tsv files in the data/ folder,
-which prepares them for the data cleaning step.
+Read the raw data from \_raw/ and write them as tsv files in the data/ folder, which prepares them for the data cleaning step.
 
 ## Load Libraries
 
