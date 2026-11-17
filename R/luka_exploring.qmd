@@ -39,7 +39,7 @@ patients <- patients |>
 patients
 ```
 
-#### Renaming the data columns 
+#### Renaming the data columns
 
 ```{r}
 patients_rename <- patients |> 

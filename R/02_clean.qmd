@@ -69,7 +69,16 @@ patients_clean <- patients |>
                              .keep = "unused")
 ```
 
-### Compairing patients list to mutations
+```{r}
+patients_clean <- patients_clean |> 
+                    mutate(age_group = factor(age_group,
+                                              levels = c("<30",
+                                                        "31-50",
+                                                        "50-60",
+                                                        "61-70",
+                                                        ">71")))
+```
+### Compairing patients list to mutations 
 
 Selecting one patient (chosen randomly)
 
@@ -117,16 +126,6 @@ patients_clean <- patients_clean |>
                       inner_join(tumor_patient, join_by("patient_id"))
 ```
 
-```{r}
-patients_clean <- patients_clean |> 
-                    mutate(age_group = factor(age_group,
-                                              levels = c("<30",
-                                                        "31-50",
-                                                        "50-60",
-                                                        "61-70",
-                                                        ">71")))
-```
-
 ## Cleaning the samples data set
 
 Selecting variables of interest
@@ -162,7 +161,6 @@ samples_clean <- samples_clean |>
 ```
 
 Count the occurrences of the same cancer type and its percentages
-
 ```{r}
 samples_clean |> 
   count(cancer_type, name = "n", sort = TRUE) |> 
@@ -171,3 +169,32 @@ samples_clean |>
   )
 
 ```
+
+
+Joint tables patients and samples table
+
+```{r}
+cancer_clean <- patients_clean |> 
+                      inner_join(samples_clean, join_by("patient_id"))
+```
+
+## Save clean data and tidy the environment
+
+Rename the two tables for the next steps and save them
+
+```{r}
+clinical <- cancer_clean
+mutations <- mutations_clean
+
+save(clinical,
+     mutations,
+     file = here("data", "02_cancer_clean.RData"))
+```
+Remove everything else from the environment, so that it's not too cluttered
+
+```{r}
+rm(list = setdiff(ls(),
+                  c("clinical",
+                    "mutations")))
+```
+

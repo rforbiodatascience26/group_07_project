@@ -1,0 +1,49 @@
+---
+title: "04_describe"
+format: html
+---
+
+```{r}
+load(here("data", "02_cancer_clean.RData"))
+#this will need to change once the data augmentation is clean
+```
+# Exploring the clinical data
+
+```{r}
+clinical |> 
+  group_by(status) |> 
+  summarise(mean(age_group))
+```
+
+# Exploring the types of mutations (which genes, where in the genome)
+```{r}
+mutations |> 
+  group_by(hugo_symbol) |> 
+  ggplot(aes(x = hugo_symbol))+
+  geom_bar()+
+  labs(title = "Number of mutations associated to genes",
+       x = "Hugo symbol of affected gene",
+       y = "Number of mutations")+
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1
+  ))
+```
+```{r}
+mutations |> 
+  group_by(hugo_symbol) |> 
+  count() |> 
+  arrange(desc(n))
+```
+There are big variations in the number of genes with mutations. Some genes are only affected once, other multiple times.  
+
+```{r}
+mutations |> 
+  group_by(hugo_symbol) |> 
+  count() |>
+  mutate(nbr_occurences = n,
+         .keep = "unused") |> 
+  select(nbr_occurences) |> 
+  mean(nbr_occurences)
+
+```
