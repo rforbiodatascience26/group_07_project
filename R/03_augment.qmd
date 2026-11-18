@@ -123,7 +123,11 @@ clinical_augment <- clinical_augment |>
 ```
 
 
+## Save the augmented datasets and top 20 gene list to an .RData file
 
-
-
-
+```{r}
+save(clinical_augment,
+     mutation_augment,
+     top_genes,
+     file = here("data", "03_cancer_augment.RData"))
+```
