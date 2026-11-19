@@ -1,0 +1,132 @@
+---
+title: "09_pca"
+format: html
+---
+
+## Aim
+
+Run a PCA on the number of mutations in the top 20 genes of each sample, to
+see whether cancer types or survival status form clusters. 
+
+## Load Data
+
+```{r}
+load(here("data", "03_cancer_augment.RData"))
+```
+
+## Extract the mutation matrix
+
+```{r}
+mutation_matrix <- clinical_augment |>
+  select(starts_with("num_mut_"))
+```
+
+We then scale all genes so that each one has the same weight, whatever its
+mutation frequency. It is a criticable approach, as we selected the top 20 genes
+on their mutation frequency. But it also avoids genes very often mutated such as
+TP53 to take too much importance in the analysis
+
+```{r}
+pca_fit <- mutation_matrix |>
+  prcomp(center = TRUE,
+         scale. = TRUE)
+```
+
+## Variance explained
+
+```{r}
+pca_variance <- tibble(pc = seq_along(pca_fit$sdev),
+                       variance = pca_fit$sdev^2) |>
+  mutate(pct_variance = variance / sum(variance) * 100)
+
+pca_variance |>
+  ggplot(aes(x = pc,
+             y = pct_variance)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Principal component",
+       y = "Variance explained (%)",
+       title = "Variance explained by each principal component")
+```
+
+```{r}
+# PCA scores
+
+pca_scores <- clinical_augment |>
+  select(patient_id, cancer_type, status, total_mutations) |>
+  bind_cols(as_tibble(pca_fit$x))
+
+pc1_label <- str_c("PC1 (", round(pca_variance$pct_variance[1], 1), "%)")
+pc2_label <- str_c("PC2 (", round(pca_variance$pct_variance[2], 1), "%)")
+```
+
+### Results colored by cancer type
+
+```{r}
+pca_scores |>
+  ggplot(aes(x = PC1,
+             y = PC2,
+             color = cancer_type)) +
+  geom_point(alpha = 0.6) +
+  theme_bw() +
+  labs(x = pc1_label,
+       y = pc2_label,
+       color = "Cancer type",
+       title = "PCA of mutation counts in the top 20 genes")
+```
+
+### Results colored by survival status
+
+```{r}
+pca_scores |>
+  ggplot(aes(x = PC1,
+             y = PC2,
+             color = status)) +
+  geom_point(alpha = 0.6) +
+  theme_bw() +
+  labs(x = pc1_label,
+       y = pc2_label,
+       color = "Survival status",
+       title = "PCA of mutation counts in the top 20 genes")
+```
+The PCA clearly doesn't separate patients based on their survival status. As we
+could expect it, only the number of mutations per gene is not enough information
+to predict the severity of a cancer. 
+
+It doesn't clearly separate cancer types neither, especially the first component.
+But the second component seems to show a partial separation of melanoma and 
+colorectal cancer. Let's verify it with a box plot:
+
+```{r}
+# Box plot of PC2 in melanoma vs colorectal cancer
+
+pca_scores |>
+  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer")) |>
+  ggplot(aes(x = cancer_type,
+             y = PC2,
+             fill = cancer_type)) +
+  geom_boxplot(alpha=0.6) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(x = "Cancer type",
+       y = "PC2",
+       title = "PC2 in melanoma vs colorectal cancer")
+```
+Indeed, melanoma have a greater PC2 value than colorectal cancer overall. We can
+then investigate the genes that drive PC2 most
+
+## Genes driving PC2
+
+```{r}
+pca_loadings <- pca_fit$rotation |>
+  as_tibble(rownames = "gene") |>
+  select(gene, PC2) |>
+  mutate(gene = str_remove(gene, "num_mut_")) |>
+  arrange(desc(abs(PC2)))
+
+pca_loadings
+```
+
+KRAS, TERT and APC are the genes driving PC2 most. It suggests that those genes
+have a role either in melanoma or colorrectal cancer .Plotting a heatmap would
+allow to verify those hypothesises
