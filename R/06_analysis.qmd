@@ -15,11 +15,21 @@ The aim of this part of the analysis is to look into:
 load(here("data", "03_cancer_augment.RData"))
 ```
 
+## Location of mutations in the genome
 ```{r}
-
+clinical_mutation |>
+  arrange(chromosome) |> 
+  ggplot(aes(x = chromosome,
+             fill = age_group))+
+  geom_bar(alpha = 0.5)+
+  theme_minimal()+
+  labs(x = "Chromosome",
+       y = "Number of mutations",
+       fill = "Age group")
 ```
-
+This graph shows the location of the mutations with respect to the chromosomes. The most affected chromosome is number 17, while the least affected is number 21. There are no mutations associated to the Y chromosome in this data set. Age does not seem to have much impact on the location of the mutation. 
 
 ```{r}
+linear model of location to cancer type
 ```
 

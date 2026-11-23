@@ -51,9 +51,7 @@ mutation_augment |>
   ))
 ```
 ```{r}
-clinical_muation <- mutation_augment |> 
-                        full_join(clinical_augment)
-mutation_augment |> 
+clinical_mutation |> 
   group_by(hugo_symbol, cancer_type) |> 
   count() |> 
   arrange(desc(n))
@@ -65,5 +63,25 @@ mutation_augment |>
   group_by(hugo_symbol) |> 
   count(name = "nbr_occurences") |>
   ungroup() |> 
-  summarise(average_mean(nbr_occurences))
+  summarise(average = mean(nbr_occurences))
 ```
+```{r}
+dim(clinical_mutation)
+```
+
+```{r}
+clinical_mutation |> 
+  distinct(patient_id, chromosome) |> 
+  count()
+```
+```{r}
+clinical_mutation |> 
+  distinct(tumor_barcode)
+```
+```{r}
+clinical_mutation |> 
+  distinct(patient_id, tumor_barcode) |> 
+  group_by(patient_id) |> 
+  count()
+```
+Each patient has one tumor_barcode associated to them, but there are only 8 tumor_barcodes. 
