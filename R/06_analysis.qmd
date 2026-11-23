@@ -2,6 +2,15 @@
 title: "06_analysis"
 format: html
 ---
+```{r}
+library(patchwork)
+library(here)
+library(ggplot2)
+library(tidyverse)
+library(purrr)
+library(broom)
+```
+
 # Analysis of the caracteristics of the mutations
 
 The aim of this part of the analysis is to look into:
@@ -25,11 +34,96 @@ clinical_mutation |>
   theme_minimal()+
   labs(x = "Chromosome",
        y = "Number of mutations",
-       fill = "Age group")
+       fill = "Age group",
+       title = "Location of mutations in chromosomes")
 ```
 This graph shows the location of the mutations with respect to the chromosomes. The most affected chromosome is number 17, while the least affected is number 21. There are no mutations associated to the Y chromosome in this data set. Age does not seem to have much impact on the location of the mutation. 
 
+### Looking at the types of mutations and survival
 ```{r}
-linear model of location to cancer type
+clinical_mutation |> 
+  filter(status == "DECEASED") |>
+  ggplot(aes(x = variant_type,
+             y = os_months))+
+  geom_boxplot()+
+  theme_minimal()+
+  labs(x = "Type of mutation",
+       y = "Survival (months)",
+       title = "Length of survival of different mutation types")
 ```
+ONP (oligonucleotide polymorphism), which affect more than 3 consecutive nucleotides are the mutations with the highest median length of survival, while INS and DEL have a lower median length of survival.
 
+### Looking at the link between cancer type and survival
+
+```{r}
+clinical_mutation |> 
+  filter(status == "DECEASED") |>
+  mutate(cancer_type = fct_reorder(cancer_type, os_months)) |>
+  ggplot(aes(x = os_months,
+             y = cancer_type))+
+  geom_boxplot()+
+  labs(x = "Survival (months)",
+       y = "",
+       title = "Survival length for various cancer types")
+```
+This plot shows the general survival of patients with different types of cancer. Highest median number of months is for renal cell carcinoma, though there is quite a large variation. Colorectal and breast cancer are at the bottom and show less variation in the number of months survived. 
+
+### Looking for correlation between the length of mutations in patients and their survival
+From the joint table, patients are filtered to keep only those who died. Then mutation length is summarized, as patients often have multiple mutations. Grouping here doesn't duplicate patients as each patient has only one number of mutations, cancer type and os_month value
+
+```{r}
+patient_mutation_summary <- clinical_mutation |> 
+                              select(patient_id, length_mutation, status, total_mutations, os_months, cancer_type)|> 
+                              filter(status == "DECEASED") |> 
+                              group_by(patient_id, os_months, total_mutations, cancer_type) |> 
+                              summarize(mean_length_mutation = mean(length_mutation),
+                                        max_length_mutation = max(length_mutation))
+```
+Fitting a linear model for each cancer type, relating the number of months survived to the length of the mutation.
+```{r}
+patient_mutation_estimate <-  patient_mutation_summary |> 
+                              group_by(cancer_type) |> 
+                              nest() |> 
+                              ungroup() |> 
+                              mutate(model_object = map(.x= data,
+                                                        .f = ~lm(formula = os_months ~ mean_length_mutation,
+                                                                 data = .x)),
+                                     model_object_tidy = map(.x = model_object,
+                                                             .f = ~tidy(.x, 
+                                                                        conf.int = TRUE,
+                                                                        conf.level = 0.95))) |> 
+                                     unnest(model_object_tidy) |> 
+                                     filter(!term == "(Intercept)") |> 
+                                     select(c(cancer_type, p.value, estimate, conf.low, conf.high)) |> 
+                                     ungroup() |> 
+                                     mutate(q.value = p.adjust(p.value, 
+                                                               method = "BH"),
+                                            is_significant = ifelse(q.value < 0.05, 
+                                                                    "yes", 
+                                                                    "no"))
+patient_mutation_estimate
+```
+According to the statistical summaries computed here, only Renal Cell Carcinoma shows a correlation between the number of month the patients survived and the length of the mutation in number of nucleotides. 
+
+```{r}
+clinical_augment |> 
+  group_by(status) |> 
+  filter(cancer_type == "Renal Cell Carcinoma") |> 
+  distinct(patient_id) |> 
+  count()
+```
+There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the analysis above, having died. 
+
+```{r}
+patient_mutation_summary |> 
+    filter(cancer_type == "Renal Cell Carcinoma") |> 
+    ggplot(aes(x = mean_length_mutation,
+               y = os_months))+
+    geom_point(alpha = 0.5)+
+    geom_smooth(method = "lm")+
+    labs(x = "Average length of mutation",
+         y = "Survival (months)",
+         title = "Survival as a function of average mutation length in patients with Renal Cell Carcinoma")+
+    theme(plot.title = element_text(size = 12))
+```
+However, from this plot, we can see that the correlation is not very pronounced. What can be observed is that mutations are generally SNPs (length of 1) and that surprisingly, longer mutations are seemingly correlated to longer survival. 

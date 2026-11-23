@@ -64,7 +64,7 @@ Add the mutation length and a flag for our list of "top genes".
 
 ```{r}
 mutation_augment <- mutations |>
-  mutate(length_mutation = end_position - start_position,
+  mutate(length_mutation = end_position - start_position + 1,
          is_top_gene = hugo_symbol %in% top_genes) 
 ```
 
