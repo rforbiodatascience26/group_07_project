@@ -4,20 +4,41 @@ format: html
 ---
 
 ```{r}
-load(here("data", "02_cancer_clean.RData"))
-#this will need to change once the data augmentation is clean
+load(here("data", "03_cancer_augment.RData"))
 ```
 # Exploring the clinical data
 
 ```{r}
-clinical |> 
-  group_by(status) |> 
-  summarise(mean(age_group))
+clinical_augment |> 
+  group_by(sex, status) |> 
+  count() |>
+  group_by(sex) |> 
+  mutate(percentage = (n/sum(n))*100)
 ```
+The patients to which the data relates to are about two thirds men to one third women, with roughly 50% survival rate, though survival of women is sligthly lower than that of men.
 
+```{r}
+clinical_augment |> 
+  group_by(cancer_type, sex) |> 
+  count() |>
+  group_by(cancer_type) |> 
+  mutate(affects_both_sex = if_else(n()>1,
+                                    TRUE,
+                                    FALSE)) |>
+  View()
+```
+The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively.
+
+```{r}
+clinical_augment |> 
+  filter(status == "DECEASED") |> 
+  group_by(age_group) |>
+  summarise(average_survival_months = mean(os_months)) |> 
+  arrange(average_survival_months)
+```
 # Exploring the types of mutations (which genes, where in the genome)
 ```{r}
-mutations |> 
+mutation_augment |> 
   group_by(hugo_symbol) |> 
   ggplot(aes(x = hugo_symbol))+
   geom_bar()+
@@ -30,20 +51,37 @@ mutations |>
   ))
 ```
 ```{r}
-mutations |> 
-  group_by(hugo_symbol) |> 
+clinical_mutation |> 
+  group_by(hugo_symbol, cancer_type) |> 
   count() |> 
   arrange(desc(n))
 ```
 There are big variations in the number of genes with mutations. Some genes are only affected once, other multiple times.  
 
 ```{r}
-mutations |> 
+mutation_augment |> 
   group_by(hugo_symbol) |> 
-  count() |>
-  mutate(nbr_occurences = n,
-         .keep = "unused") |> 
-  select(nbr_occurences) |> 
-  mean(nbr_occurences)
-
+  count(name = "nbr_occurences") |>
+  ungroup() |> 
+  summarise(average = mean(nbr_occurences))
 ```
+```{r}
+dim(clinical_mutation)
+```
+
+```{r}
+clinical_mutation |> 
+  distinct(patient_id, chromosome) |> 
+  count()
+```
+```{r}
+clinical_mutation |> 
+  distinct(tumor_barcode)
+```
+```{r}
+clinical_mutation |> 
+  distinct(patient_id, tumor_barcode) |> 
+  group_by(patient_id) |> 
+  count()
+```
+Each patient has one tumor_barcode associated to them, but there are only 8 tumor_barcodes. 

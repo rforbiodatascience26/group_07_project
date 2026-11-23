@@ -52,6 +52,13 @@ mutations_clean <- mutations_clean |>
                       select(-strand) 
 ```
 
+Change the type of the chromosome column to factor. 
+```{r}
+mutations_clean <- mutations_clean |> 
+                    mutate(chromosome = factor(chromosome, 
+                                               levels = c(as.character(1:22), "X")))
+```
+
 ## Cleaning patients data set
 
 Renaming Patient_id to match mutations column and modifying the way status is logged in the table.

@@ -64,8 +64,14 @@ Add the mutation length and a flag for our list of "top genes".
 
 ```{r}
 mutation_augment <- mutations |>
-  mutate(length_mutation = end_position - start_position,
-         is_top_gene = hugo_symbol %in% top_genes)
+  mutate(length_mutation = end_position - start_position + 1,
+         is_top_gene = hugo_symbol %in% top_genes) 
+```
+
+```{r}
+mutation_augment <- mutation_augment |> 
+  select(-c(start_position, end_position)) |> 
+  relocate(length_mutation, .after = chromosome)
 ```
 
 ## Gene Matrix of top 20 genes
@@ -122,6 +128,33 @@ clinical_augment <- clinical_augment |>
   )
 ```
 
+```{r}
+clinical_augment |> 
+  filter(number_mutations != total_mutations)
+```
+
+```{r}
+clinical_augment <- clinical_augment |> 
+                        select(-number_mutations)
+```
+
+
+### Joining datasets
+Join the two data sets now that additional variables are added.
+```{r}
+clinical_mutation <- mutation_augment |> 
+                        full_join(clinical_augment, by = "patient_id")
+```
+
+```{r}
+clinical_mutation |> 
+  filter(tumor_barcode != sample_barcode)
+```
+Since tumor_barcode and sample_barcode are essential the same variable, one of the columns can be droped.
+```{r}
+clinical_mutation <- clinical_mutation |> 
+                        select(-sample_barcode)
+```
 
 ## Save the augmented datasets and top 20 gene list to an .RData file
 
@@ -129,5 +162,6 @@ clinical_augment <- clinical_augment |>
 save(clinical_augment,
      mutation_augment,
      top_genes,
+     clinical_mutation,
      file = here("data", "03_cancer_augment.RData"))
 ```
