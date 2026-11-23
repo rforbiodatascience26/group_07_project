@@ -1,0 +1,25 @@
+---
+title: "06_analysis"
+format: html
+---
+# Analysis of the caracteristics of the mutations
+
+The aim of this part of the analysis is to look into:
+- where in the genome the mutations occur
+- effect of mutation and cancer type or survival 
+- the link between the position of the mutation and the cancer types
+- whether there are differences between location based on sex
+- whether there are differences in muation location and survival of patients
+
+```{r}
+load(here("data", "03_cancer_augment.RData"))
+```
+
+```{r}
+
+```
+
+
+```{r}
+```
+
