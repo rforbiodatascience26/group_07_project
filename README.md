@@ -15,6 +15,5 @@ After cloning the repository, the raw data needs to be downloaded in order to ru
 4. Place the following files inside the `_raw` folder:
    - `data_clinical_patient.txt`
    - `data_clinical_sample.txt`
-   - `data_gene_panel_matrix.txt`
    - `data_mutations.txt`
-   - `data_sv.txt`
+
