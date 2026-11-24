@@ -1,7 +1,14 @@
 ---
 title: "02_clean"
-format: html
+format:
+  html:
+    embed-resources: true
+editor: visual
+execute: 
+  echo: false
 ---
+
+### Library
 
 ## Load data
 
