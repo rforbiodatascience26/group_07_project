@@ -1,11 +1,13 @@
 ---
 title: "06_analysis"
-format: html
-execute: 
-  echo: false
+format:
+  html:
+    embed-resources: true
+editor: visual
 ---
+### Library
 ```{r}
-
+#| message: false
 library(patchwork)
 library(here)
 library(ggplot2)
