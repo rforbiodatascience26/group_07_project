@@ -68,7 +68,7 @@ g2
 ```
 
 This show that the cancer with the lowest survival rate is glioma, followed by breast cancer.\
-The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind). \
+The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind).\
 Disregarding the odd one, the one of the collectively highest survival percentage is the melanoma.
 
 ```{r}
