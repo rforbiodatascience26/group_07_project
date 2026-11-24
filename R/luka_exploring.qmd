@@ -8,6 +8,7 @@ editor: visual
 ## Exploring data + wrangling
 
 ```{r}
+#| message: false
 library(tidyverse)
 library(here)
 ```
@@ -24,9 +25,9 @@ mutations <- read_tsv(here("data", "01_dat_load_mutations.tsv"))
 ### Cleaning data?
 
 ```{r}
-patients |> view()
-samples |> view()
-mutations |> view()
+#patients |> view()
+#samples |> view()
+#mutations |> view()
 ```
 
 ```{r}
@@ -104,6 +105,11 @@ g1
 Calculate the percent of survival for each cancer type
 
 ```{r}
+survival_table
+survival_table |> filter(survival_table$CANCER_TYPE == 'Skin Cancer, Non-Melanoma')
+```
+
+```{r}
 survival_percentage <- survival_table |> 
   group_by(CANCER_TYPE, SEX) |> 
   summarise(number_of_patients = n(),
@@ -147,4 +153,41 @@ g3 <- ggplot(data = survival_percentage,
     angle = 20,
     hjust = 0.75))
 g3
+```
+
+## Survival curve
+
+```{r}
+survival_curve_test <- survival_table |> 
+  group_by(SEX,OS_MONTHS) |> 
+  summarise(
+    deaths = sum(OS_STATUS == 'DECEASED'),
+    living = sum(OS_STATUS == 'LIVING'),
+    .groups = 'drop'
+  ) |> 
+  
+  arrange(SEX,OS_MONTHS) |> 
+  
+  group_by(SEX) |> 
+  mutate(
+    at_risk = rev(cumsum(rev(deaths + living))),
+    survival = cumprod(1 - deaths/at_risk)
+  ) |> 
+  ungroup()
+
+
+#survival_curve_test
+g1 <- ggplot(data = survival_curve_test,
+             mapping = aes(x = OS_MONTHS,
+                           y = survival,
+                           color = SEX))+
+  geom_step()+
+  labs(title = 'Overall survival by sex',
+       x = 'Overall survival (months)',
+       y = 'Survival probability',
+       color = 'Sex')+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = 'bottom')
+g1
 ```

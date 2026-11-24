@@ -16,7 +16,5 @@ library(here)
 Uses the one created in the end of the 02_clean file
 
 ```{r}
-load(here("data", "02_cancer_clean.RData"))
+load(here("data", "03_cancer_augment.RData"))
 ```
-
-did it work? can you see this?
