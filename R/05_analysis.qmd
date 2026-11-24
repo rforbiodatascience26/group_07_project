@@ -24,8 +24,7 @@ load(here("data", "03_cancer_augment.RData"))
 
 ## Analysis of survival based on cancer type
 
-First, the percentage of survival for all cancer types is compared between men and women.
-#### Boxplot of the survival for each type of cancer
+First, the percentage of survival for all cancer types is compared between men and women. \#### Boxplot of the survival for each type of cancer
 
 To give an overview of the different cancer types.
 
@@ -65,7 +64,7 @@ clinical_augment |>
 There is no notable difference between the survival of men or women when looking at all cancer types.
 
 This show that the cancer with the lowest survival rate is glioma, followed by breast cancer.\
-The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind). \
+The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind).\
 Disregarding the odd one, the one of the collectively highest survival percentage is the melanoma.
 
 ```{r}
@@ -152,6 +151,12 @@ g1 <- ggplot(data = survival_curve_test |>
 g1
 ```
 
+To look more closely on two quite different, we have chosen glioma, one of the lowest survival percentage, and melanoma, one of the highest survival percentage.
+
+Here it is more clear, that the type of cancer impacts survival a lot.
+
+In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
+
 Survival curve shows ....
 
 In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment. Here, survival is thought of as a metric of cancer severity.
@@ -172,7 +177,7 @@ clinical_mutation |>
 
 This plot shows the general survival of patients with different types of cancer. Highest median number of months is for renal cell carcinoma, though there is quite a large variation. Colorectal and breast cancer are at the bottom and show less variation in the number of months survived.
 
-### Analysis of survival based on characteristics of the mutations 
+### Analysis of survival based on characteristics of the mutations
 
 ***From the joint table (clincal_mutation), patients are filtered to keep only those who died. Then mutation length is summarized, as patients often have multiple mutations. Grouping here doesn't duplicate patients as each patient has only one number of mutations, cancer type and os_month value***
 
@@ -237,8 +242,3 @@ patient_mutation_summary |>
 ```
 
 However, from this plot, we can see that the correlation is not very pronounced. What can be observed is that mutations are generally SNPs (length of 1) and that surprisingly, longer mutations are seemingly correlated to longer survival.
-To look more closely on two quite different, we have chosen glioma, one of the lowest survival percentage, and melanoma, one of the highest survival percentage.
-
-Here it is more clear, that the type of cancer impacts survival a lot.
-
-In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
