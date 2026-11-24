@@ -6,6 +6,8 @@ format:
 editor: visual
 ---
 
+## Check that the .html file is the same, and contains everything
+
 The aim of this analysis is to explore the survival rate of patients and how the characteristics of the mutations (variants, length, location with respect to chromosomes) may affect survival.
 
 #### Loading libraries and the data
