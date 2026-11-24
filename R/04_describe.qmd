@@ -59,13 +59,6 @@ clinical_augment |>
 ```
 There seems to be no evident correlation between the age and the survival months.
 
-```{r}
-clinical_mutation <- mutation_augment |>
-  left_join(clinical_augment,
-            by = c("patient_id",
-                   "tumor_barcode" = "sample_barcode"))
-```
-
 
 ```{r}
 clinical_mutation |> 
