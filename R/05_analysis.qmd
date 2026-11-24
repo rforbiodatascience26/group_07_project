@@ -1,6 +1,9 @@
 ---
 title: "05_analysis"
-format: html
+format:   
+  html:
+    embed-resources: true
+editor: visual
 ---
 
 ### Loading libraries
@@ -13,7 +16,7 @@ library(here)
 
 ### Loading the data
 
-Uses the one created in the end of the 02_clean file
+Uses the one created in the end of the 03_augment file
 
 ```{r}
 load(here("data", "03_cancer_augment.RData"))
@@ -23,14 +26,22 @@ load(here("data", "03_cancer_augment.RData"))
 clinical_augment
 ```
 
+#### Boxplot of the survival for each type of cancer
+
+To give an overview of the different cancer types.
+
 ```{r}
 g1 <- ggplot(data = clinical_augment,
             mapping = aes(y = cancer_type,
-                          x = os_months,
-                          color = sex)) + 
-  geom_boxplot()
+                          x = os_months)) + 
+  geom_boxplot()+
+  labs(title = 'Survival for each cancer type',
+       x = 'Time (Months)',
+       y = 'Cancer type')
 g1
 ```
+
+Col-plot of the survival chance for each cancer type, grouped by sex.
 
 ```{r}
 survival_percentage <- clinical_augment |> 
@@ -38,7 +49,8 @@ survival_percentage <- clinical_augment |>
   summarise(number_of_patients = n(),
   average_survival = mean(os_months, na.rm = TRUE),
   alive = sum(status == 'LIVING', na.rm = TRUE),
-  survival_percent = alive / number_of_patients * 100)
+  survival_percent = alive / number_of_patients * 100,
+  .groups = 'drop')
 
 g2 <- ggplot(data = survival_percentage,
              mapping = aes(x = cancer_type,
@@ -54,6 +66,10 @@ g2 <- ggplot(data = survival_percentage,
     hjust = 0.75))
 g2
 ```
+
+This show that the cancer with the lowest survival rate is glioma, followed by breast cancer.\
+The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind). \
+Disregarding the odd one, the one of the collectively highest survival percentage is the melanoma.
 
 ```{r}
 survival_percentage <- clinical_augment |> 
@@ -79,16 +95,16 @@ g3
 
 ```{r}
 survival_curve_test <- clinical_augment |> 
-  group_by(sex,os_months) |> 
+  group_by(cancer_type,os_months) |> 
   summarise(
     deaths = sum(status == 'DECEASED'),
     living = sum(status == 'LIVING'),
     .groups = 'drop'
   ) |> 
   
-  arrange(sex,os_months) |> 
+  arrange(cancer_type,os_months) |> 
   
-  group_by(sex) |> 
+  group_by(cancer_type) |> 
   mutate(
     at_risk = rev(cumsum(rev(deaths + living))),
     survival = cumprod(1 - deaths/at_risk)
@@ -98,16 +114,48 @@ survival_curve_test <- clinical_augment |>
 
 #survival_curve_test
 g1 <- ggplot(data = survival_curve_test,
+             
              mapping = aes(x = os_months,
                            y = survival,
-                           color = sex))+
+                           color = cancer_type))+
   geom_step()+
-  labs(title = 'Overall survival by sex',
+  labs(title = 'Overall survival by cancer type',
        x = 'Overall survival (months)',
        y = 'Survival probability',
-       color = 'Sex')+
+       color = 'Cancer types')+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = 'bottom')+
+  guides(
+    color = guide_legend(
+      title.position ='top'))
+g1
+```
+
+This is survival probability over time for each cancer types. Showing that the type have a big impact in length and probability of survival.
+
+```{r}
+
+
+#survival_curve_test
+g1 <- ggplot(data = survival_curve_test |> 
+             filter(cancer_type %in% c('Melanoma','Glioma')),
+             mapping = aes(x = os_months,
+                           y = survival,
+                           color = cancer_type))+
+  geom_step()+
+  labs(title = 'Overall survival by cancer type',
+       x = 'Overall survival (months)',
+       y = 'Survival probability',
+       color = 'Cancer types')+
   theme(
     plot.title = element_text(hjust = 0.5),
     legend.position = 'bottom')
 g1
 ```
+
+To look more closely on two quite different, we have chosen glioma, one of the lowest survival percentage, and melanoma, one of the highest survival percentage.
+
+Here it is more clear, that the type of cancer impacts survival a lot.
+
+In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
