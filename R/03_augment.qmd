@@ -1,7 +1,17 @@
 ---
 title: "03_augment"
-format: html
+format:
+  html:
+    embed-resources: true
+editor: visual
 ---
+
+```{r}
+library(here)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
 
 ## Load data from step 2
 
