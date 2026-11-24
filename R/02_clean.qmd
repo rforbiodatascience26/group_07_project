@@ -8,7 +8,15 @@ execute:
   echo: false
 ---
 
-### Library
+## Library
+
+```{r}
+#| message: false
+
+library("tidyverse")
+library("here")
+```
+
 
 ## Load data
 
@@ -18,7 +26,6 @@ patients  <- read_tsv(here("data", "01_patients.tsv"))
 samples   <- read_tsv(here("data", "01_samples.tsv"))
 mutations <- read_tsv(here("data", "01_mutations.tsv"))
 ```
-
 
 ## Cleaning mutations to keep variables of interest
 
@@ -59,7 +66,8 @@ mutations_clean <- mutations_clean |>
                       select(-strand) 
 ```
 
-Change the type of the chromosome column to factor. 
+Change the type of the chromosome column to factor.
+
 ```{r}
 mutations_clean <- mutations_clean |> 
                     mutate(chromosome = factor(chromosome, 
@@ -92,7 +100,8 @@ patients_clean <- patients_clean |>
                                                         "61-70",
                                                         ">71")))
 ```
-### Compairing patients list to mutations 
+
+### Compairing patients list to mutations
 
 Selecting one patient (chosen randomly)
 
@@ -115,7 +124,6 @@ patient_id <-
     select(PATIENT_ID) |> 
     rename(id = PATIENT_ID)
 ```
-
 
 Since there are more patients than tumor samples, we need to identify which patients do not have tumors, in order to eliminate them from the data set we want to work with in the end.
 
@@ -175,6 +183,7 @@ samples_clean <- samples_clean |>
 ```
 
 Count the occurrences of the same cancer type and its percentages
+
 ```{r}
 samples_clean |> 
   count(cancer_type, name = "n", sort = TRUE) |> 
@@ -183,7 +192,6 @@ samples_clean |>
   )
 
 ```
-
 
 Joint tables patients and samples table
 
@@ -204,6 +212,7 @@ save(clinical,
      mutations,
      file = here("data", "02_cancer_clean.RData"))
 ```
+
 Remove everything else from the environment, so that it's not too cluttered
 
 ```{r}
@@ -211,4 +220,3 @@ rm(list = setdiff(ls(),
                   c("clinical",
                     "mutations")))
 ```
-

@@ -2,7 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+*.html
 
 *.Rproj
 _raw/
 data/
+R/05_analysis_files/
+R/06_PCA_files/

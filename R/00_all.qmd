@@ -1,0 +1,59 @@
+---
+title: "00_all"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Aim of the file
+
+Run the whole pipeline in order, from the raw data to the analyses
+
+## Load Libraries
+
+```{r}
+#| message: false
+
+library("tidyverse")
+library("here")
+library("quarto")
+```
+
+## Pipeline steps
+
+```{r}
+pipeline_steps <- c("01_load",
+                    "02_clean",
+                    "03_augment",
+                    "04_describe",
+                    "05_analysis",
+                    "06_PCA")
+```
+
+## Run the pipeline
+
+```{r}
+#| message: false
+
+dir.create(here("data"),
+           showWarnings = FALSE)
+dir.create(here("results"),
+           showWarnings = FALSE)
+
+render_step <- function(step_name) {
+  quarto_render(input = here("R", str_c(step_name, ".qmd")),
+                quiet = TRUE)
+  file.rename(from = here("R", str_c(step_name, ".html")),
+              to = here("results", str_c(step_name, ".html")))
+}
+
+walk(pipeline_steps,
+     render_step)
+```
+
+## Check the outputs
+
+```{r}
+list.files(here("results"))
+```

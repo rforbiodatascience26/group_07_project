@@ -1,6 +1,9 @@
 ---
 title: "04_describe"
-format: html
+format: 
+  html:
+    embed-resources: true
+editor: visual
 ---
 
 ```{r}
