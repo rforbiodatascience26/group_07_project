@@ -1,7 +1,18 @@
 ---
 title: "04_describe"
-format: html
+format:
+  html:
+    embed-resources: true
+editor: visual
 ---
+### Library
+```{r}
+#| message: false
+library(here)
+library(dplyr)
+library(ggplot2)
+```
+
 
 ```{r}
 load(here("data", "03_cancer_augment.RData"))
@@ -24,8 +35,7 @@ clinical_augment |>
   group_by(cancer_type) |> 
   mutate(affects_both_sex = if_else(n()>1,
                                     TRUE,
-                                    FALSE)) |>
-  View()
+                                    FALSE))
 ```
 The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively.
 
