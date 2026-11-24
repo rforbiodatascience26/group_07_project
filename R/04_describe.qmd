@@ -1,6 +1,6 @@
 ---
 title: "04_describe"
-format:
+format: 
   html:
     embed-resources: true
 editor: visual
@@ -15,8 +15,58 @@ library(ggplot2)
 
 
 ```{r}
+#| message: false
+# Load libraries
+
+library("tidyverse")
+library("here")
+```
+
+```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
+
+# Descriptive plots
+
+## Cancer type and number of mutations
+
+This plot shows the correlation between the different types of cancer, and the number of mutations that are present in the individual patients.
+
+```{r}
+ggplot(data = clinical_augment,
+       mapping = aes(x = cancer_type,
+                     y = total_mutations,
+                     color = cancer_type)) +
+  geom_jitter() +
+    theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(title = "Cancer type and number of mutations", 
+       subtitle = "The dots indicate how many mutations the individual patient has",
+       x = "Cancer type",
+       y = "Number of mutations") +
+  theme(legend.position = "none")
+```
+
+### Status and gender, colored by age group
+
+Visualizing the LIVING and DECEASED patients based on gender and colored by age group.
+
+```{r}
+ggplot(data = clinical_augment,
+       mapping = aes(x = status,
+                     y = sex,
+                     color = age_group))+
+  scale_size_area(max_size = 20)+
+  geom_count(position = position_dodge(width = 0.75),
+             alpha = 0.8)+
+  labs(size = "Count",
+       x = "Patient status",
+       y = "Gender") 
+```
+
 # Exploring the clinical data
 
 ```{r}
@@ -26,6 +76,7 @@ clinical_augment |>
   group_by(sex) |> 
   mutate(percentage = (n/sum(n))*100)
 ```
+
 The patients to which the data relates to are about two thirds men to one third women, with roughly 50% survival rate, though survival of women is sligthly lower than that of men.
 
 ```{r}
@@ -37,7 +88,20 @@ clinical_augment |>
                                     TRUE,
                                     FALSE))
 ```
-The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively.
+
+The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively. Let's plot the distribution of cancer types accross the dataset:
+
+```{r}
+clinical_augment |>
+  ggplot(aes(x = fct_infreq(cancer_type))) +
+  geom_bar() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1)) +
+  labs(x = "Cancer type",
+       y = "Number of samples",
+       title = "Number of samples per cancer type")
+```
 
 ```{r}
 clinical_augment |> 
@@ -46,27 +110,17 @@ clinical_augment |>
   summarise(average_survival_months = mean(os_months)) |> 
   arrange(average_survival_months)
 ```
-# Exploring the types of mutations (which genes, where in the genome)
-```{r}
-mutation_augment |> 
-  group_by(hugo_symbol) |> 
-  ggplot(aes(x = hugo_symbol))+
-  geom_bar()+
-  labs(title = "Number of mutations associated to genes",
-       x = "Hugo symbol of affected gene",
-       y = "Number of mutations")+
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1
-  ))
-```
+
+There seems to be no evident correlation between the age and the survival months.
+
 ```{r}
 clinical_mutation |> 
   group_by(hugo_symbol, cancer_type) |> 
   count() |> 
   arrange(desc(n))
 ```
-There are big variations in the number of genes with mutations. Some genes are only affected once, other multiple times.  
+
+There are big variations in the number of genes with mutations. Some genes are only affected once, other multiple times.
 
 ```{r}
 mutation_augment |> 
@@ -75,6 +129,7 @@ mutation_augment |>
   ungroup() |> 
   summarise(average = mean(nbr_occurences))
 ```
+
 ```{r}
 dim(clinical_mutation)
 ```
@@ -84,14 +139,17 @@ clinical_mutation |>
   distinct(patient_id, chromosome) |> 
   count()
 ```
+
 ```{r}
 clinical_mutation |> 
   distinct(tumor_barcode)
 ```
+
 ```{r}
 clinical_mutation |> 
   distinct(patient_id, tumor_barcode) |> 
   group_by(patient_id) |> 
   count()
 ```
-Each patient has one tumor_barcode associated to them, but there are only 8 tumor_barcodes. 
+
+Each patient has one tumor_barcode associated to them, but there are only 8 tumor_barcodes.

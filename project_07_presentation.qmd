@@ -1,14 +1,17 @@
 ---
-title: "project_07_presentation"
-authors: ...
+title: "Project 07 presentation"
+authors: ... Luka Falk Jørgensen (s245750), Nikolaj Krog (s245342) ...
 format: 
   revealjs:
     theme: solarized
     slide-number: true
+    width: 1600
+    height: 900
+    margin: 0.03
 editor: visual
 ---
 
-## Introduction
+## Raw data
 
 **Data used:**
 
@@ -16,9 +19,7 @@ TMB and Immunotherapy from cBioPortal for cancer genomics
 
 by (MSK, Nat Genet 2019)
 
-[![cBioPortal logo](images/clipboard-3840736939.png)](https://www.cbioportal.org/datasets)
-
-## Materials and Methods
+[![](images/clipboard-3840736939.png){fig-align="left"}](https://www.cbioportal.org/datasets)
 
 3 files:
 
@@ -30,7 +31,7 @@ by (MSK, Nat Genet 2019)
 
 1661 patients represented in data set
 
-## Data wrangling
+## Data cleaning
 
 ::: column
 -   Selected interesting columns to work with
@@ -54,7 +55,7 @@ patients_clean <- patients_clean |>
 ```
 :::
 
-## Data augmentation
+## Data wrangling
 
 **Mutation placement**
 
@@ -66,19 +67,202 @@ mutation_augment <- mutations |>
          is_top_gene = hugo_symbol %in% top_genes)
 ```
 
-## Results
+## Descriptive overview
 
-Should be seeing results slide
-
--   What have we done? How does our final data set look?
+-   What have we done? What does our data look like
 
 -   What can we use this data for? (show plots on next slide)
 
-## Data representation
+## Survival
 
 Put different interesting and aesthetically pleasing plots here
 
 Possibly add more slides if we have a lot of plots we want to show off
+
+## Mutations
+
+::::: columns
+::: {.column width="35%" smaller=""}
+Number of mutations on different chromosomes
+
+------------------------------------------------------------------------
+
+Patient survival months, based on length of mutations
+:::
+
+::: {.column width="65%"}
+```{r}
+#| fig-height: 4
+
+library(tidyverse)
+library(here)
+load(here("data", "03_cancer_augment.RData"))
+
+
+clinical_mutation |>
+  arrange(chromosome) |> 
+  ggplot(aes(x = chromosome,
+             fill = age_group))+
+  geom_bar(alpha = 0.5)+
+  theme_minimal()+
+  labs(x = "Chromosome",
+       y = "Number of mutations",
+       fill = "Age group",
+       title = "Location of mutations in chromosomes")
+```
+
+```{r}
+#| fig-height: 3.5
+
+
+library(tidyverse)
+library(here)
+load(here("data", "03_cancer_augment.RData"))
+
+patient_mutation_summary <- clinical_mutation |> 
+                              select(patient_id, length_mutation, status, total_mutations, os_months, cancer_type)|> 
+                              filter(status == "DECEASED") |> 
+                              group_by(patient_id, os_months, total_mutations, cancer_type) |> 
+                              summarize(mean_length_mutation = mean(length_mutation),
+                                        max_length_mutation = max(length_mutation))
+
+patient_mutation_summary |> 
+    filter(cancer_type == "Renal Cell Carcinoma") |> 
+    ggplot(aes(x = mean_length_mutation,
+               y = os_months))+
+    geom_point(alpha = 0.5)+
+    geom_smooth(method = "lm")+
+    labs(x = "Average length of mutation",
+         y = "Survival (months)",
+         title = "Survival as a function of average mutation length in patients with Renal Cell Carcinoma")+
+    theme(plot.title = element_text(size = 12))
+```
+:::
+:::::
+
+## PCA
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+load(here("data", "03_cancer_augment.RData"))
+
+mutation_matrix <- clinical_augment |>
+  select(starts_with("num_mut_"))
+
+pca_fit <- mutation_matrix |>
+  prcomp(center = TRUE,
+         scale. = TRUE)
+
+pca_variance <- tibble(pc = seq_along(pca_fit$sdev),
+                       variance = pca_fit$sdev^2) |>
+  mutate(pct_variance = variance / sum(variance) * 100)
+
+# PCA scores
+pca_scores <- clinical_augment |>
+  select(patient_id, cancer_type, status, total_mutations) |>
+  bind_cols(as_tibble(pca_fit$x))
+
+pc1_label <- str_c("PC1 (", round(pca_variance$pct_variance[1], 1), "%)")
+pc2_label <- str_c("PC2 (", round(pca_variance$pct_variance[2], 1), "%)")
+
+pca_scores |>
+  ggplot(aes(x = PC1,
+             y = PC2,
+             color = cancer_type)) +
+  geom_point(alpha = 0.6) +
+  theme_bw() +
+  labs(x = pc1_label,
+       y = pc2_label,
+       color = "Cancer type",
+       title = "PCA of mutation counts in the top 20 genes")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+pca_scores |>
+  ggplot(aes(x = PC1,
+             y = PC2,
+             color = status)) +
+  geom_point(alpha = 0.6) +
+  theme_bw() +
+  labs(x = pc1_label,
+       y = pc2_label,
+       color = "Survival status",
+       title = "PCA of mutation counts in the top 20 genes")
+```
+
+```{r}
+# Box plot of PC2 in melanoma vs colorectal cancer
+
+pca_scores |>
+  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer")) |>
+  ggplot(aes(x = cancer_type,
+             y = PC2,
+             fill = cancer_type)) +
+  geom_boxplot(alpha=0.6) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(x = "Cancer type",
+       y = "PC2",
+       title = "PC2 in melanoma vs colorectal cancer")
+```
+:::
+:::::
+
+## Heatmap
+
+```{r}
+# Load the augmented data
+load(here("data", "03_cancer_augment.RData"))
+
+# Reshape to long format and calculate mutation percentage per cancer type
+heatmap_data <- clinical_augment |>
+  # Gather all 20 num_mut_* columns into two columns: 'gene' and 'mut_count'
+  pivot_longer(
+    cols = starts_with("num_mut_"),
+    names_to = "gene",
+    values_to = "mut_count"
+  ) |>
+  # Clean up the gene names by removing the "num_mut_" prefix
+  mutate(gene = str_remove(gene, "^num_mut_")) |>
+  # Group by cancer type and gene
+  group_by(cancer_type, gene) |>
+  # Calculate the % of samples in that cancer type that have at least 1 mutation
+  summarise(
+    n_samples = n(),
+    n_mutated = sum(mut_count > 0),
+    pct_mutated = (n_mutated / n_samples) * 100,
+    .groups = "drop"
+  )
+
+heatmap_data |>
+  # Order genes so the most frequently mutated ones appear at the top
+  mutate(gene = fct_reorder(gene, pct_mutated, .fun = mean)) |>
+  ggplot(aes(x = cancer_type, y = gene, fill = pct_mutated)) +
+  # Draw the heatmap tiles with thin white borders
+  geom_tile(color = "white", linewidth = 0.4) +
+  # Add exact percentage numbers inside the tiles
+  geom_text(aes(label = round(pct_mutated, 0)), size = 2.8, color = "black") +
+  # Use a clean color gradient from light to dark
+  scale_fill_gradient(
+    low = "#f7fbff",
+    high = "#08519c",
+    name = "Mutated\nSamples (%)"
+  ) +
+  labs(
+    title = "Mutation Frequency of Top 20 Driver Genes Across Cancer Types",
+    subtitle = "Values inside tiles indicate percentage (%) of samples with ≥1 mutation",
+    x = "Cancer Type",
+    y = "Driver Gene"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  )
+```
 
 ## Discussion
 
