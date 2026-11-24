@@ -3,6 +3,14 @@ title: "04_describe"
 format: html
 ---
 
+```{r}
+#| message: false
+# Load libraries
+
+library("tidyverse")
+library("here")
+```
+
 
 ```{r}
 load(here("data", "03_cancer_augment.RData"))
