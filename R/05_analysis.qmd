@@ -18,3 +18,96 @@ Uses the one created in the end of the 02_clean file
 ```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
+
+```{r}
+clinical_augment
+```
+
+```{r}
+g1 <- ggplot(data = clinical_augment,
+            mapping = aes(y = cancer_type,
+                          x = os_months,
+                          color = sex)) + 
+  geom_boxplot()
+g1
+```
+
+```{r}
+survival_percentage <- clinical_augment |> 
+  group_by(cancer_type, sex) |> 
+  summarise(number_of_patients = n(),
+  average_survival = mean(os_months, na.rm = TRUE),
+  alive = sum(status == 'LIVING', na.rm = TRUE),
+  survival_percent = alive / number_of_patients * 100)
+
+g2 <- ggplot(data = survival_percentage,
+             mapping = aes(x = cancer_type,
+                           y = survival_percent,
+                           fill = sex)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Cancer type',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75))
+g2
+```
+
+```{r}
+survival_percentage <- clinical_augment |> 
+  group_by(sex) |> 
+  summarise(
+    number_of_patients = n(),
+    alive = sum(status == 'LIVING', na.rm = TRUE),
+    survival_percent = alive / number_of_patients * 100)
+g3 <- ggplot(data = survival_percentage,
+             mapping = aes(x = sex,
+                           y = survival_percent,
+                           fill = sex)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Sex',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75))
+g3
+```
+
+```{r}
+survival_curve_test <- clinical_augment |> 
+  group_by(sex,os_months) |> 
+  summarise(
+    deaths = sum(status == 'DECEASED'),
+    living = sum(status == 'LIVING'),
+    .groups = 'drop'
+  ) |> 
+  
+  arrange(sex,os_months) |> 
+  
+  group_by(sex) |> 
+  mutate(
+    at_risk = rev(cumsum(rev(deaths + living))),
+    survival = cumprod(1 - deaths/at_risk)
+  ) |> 
+  ungroup()
+
+
+#survival_curve_test
+g1 <- ggplot(data = survival_curve_test,
+             mapping = aes(x = os_months,
+                           y = survival,
+                           color = sex))+
+  geom_step()+
+  labs(title = 'Overall survival by sex',
+       x = 'Overall survival (months)',
+       y = 'Survival probability',
+       color = 'Sex')+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = 'bottom')
+g1
+```
