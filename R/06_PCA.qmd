@@ -156,9 +156,6 @@ allow to verify those hypothesises
 ## Heatmap of top 20 Driver Genes
 
 ```{r}
-# Load the augmented data
-load(here("data", "03_cancer_augment.RData"))
-
 # Reshape to long format and calculate mutation percentage per cancer type
 heatmap_data <- clinical_augment |>
   # Gather all 20 num_mut_* columns into two columns: 'gene' and 'mut_count'
@@ -208,6 +205,11 @@ heatmap_data |>
     panel.grid = element_blank()
   )
 ```
+On the heatmap, the x axis groups the patients by cancer types and on the y axis
+we get the 20 driver genes and the tiles essentially show us what percentage out
+of all the patients in that specific cancer type, have at least one mutation 
+in that specific gene.
+
 Indeed, KRAS and APC mutations appear to be correlated with colorectal cancer,
 while TERT mutations seem correlated with melanoma. Even though the PCA is not 
 very informative, because mutations alone don't carry enough biological context,
