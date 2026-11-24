@@ -1,8 +1,11 @@
 ---
 title: "06_analysis"
 format: html
+execute: 
+  echo: false
 ---
 ```{r}
+
 library(patchwork)
 library(here)
 library(ggplot2)
