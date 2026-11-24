@@ -1,6 +1,9 @@
 ---
 title: "Analysis of survival and characteristics of mutations"
-format: html
+format:
+  html:
+    embed-resources: true
+editor: visual
 ---
 
 The aim of this analysis is to explore the survival rate of patients and how the characteristics of the mutations (variants, length, location with respect to chromosomes) may affect survival.
@@ -21,40 +24,17 @@ load(here("data", "03_cancer_augment.RData"))
 
 ## Analysis of survival based on cancer type
 
-```{r}
-survival_percentage <- clinical_augment |> 
-  group_by(cancer_type, sex) |> 
-  summarise(number_of_patients = n(),
-  average_survival = mean(os_months, na.rm = TRUE),
-  alive = sum(status == 'LIVING', na.rm = TRUE),
-  survival_percent = alive / number_of_patients * 100)
-
-g2 <- ggplot(data = survival_percentage,
-             mapping = aes(x = cancer_type,
-                           y = survival_percent,
-                           fill = sex)) + 
-  geom_col(position = 'dodge')+
-  labs (title = 'Survival percentage for each cancer type',
-        x = 'Cancer type',
-        y = 'Survival percent (%)')+
-  theme_minimal()+
-  theme(axis.text.x = element_text(
-    angle = 20,
-    hjust = 0.75))
-g2
-```
+First, the percentage of survival for all cancer types is compared between men and women.
 
 ```{r}
-survival_percentage <- clinical_augment |> 
+clinical_augment |> 
   group_by(sex) |> 
-  summarise(
-    number_of_patients = n(),
-    alive = sum(status == 'LIVING', na.rm = TRUE),
-    survival_percent = alive / number_of_patients * 100)
-g3 <- ggplot(data = survival_percentage,
-             mapping = aes(x = sex,
-                           y = survival_percent,
-                           fill = sex)) + 
+  summarise(number_of_patients = n(),
+            alive = sum(status == 'LIVING', na.rm = TRUE),
+            survival_percent = alive / number_of_patients * 100) |>
+  ggplot(mapping = aes(x = sex,
+                       y = survival_percent,
+                       fill = sex)) + 
   geom_col(position = 'dodge')+
   labs (title = 'Survival percentage for each cancer type',
         x = 'Sex',
@@ -63,8 +43,33 @@ g3 <- ggplot(data = survival_percentage,
   theme(axis.text.x = element_text(
     angle = 20,
     hjust = 0.75))
-g3
+
 ```
+
+There is no notable difference between the survival of men or women when looking at all cancer types.
+
+```{r}
+clinical_augment |> 
+  group_by(cancer_type, sex) |> 
+  summarise(number_of_patients = n(),
+  average_survival = mean(os_months, na.rm = TRUE),
+  alive = sum(status == 'LIVING', na.rm = TRUE),
+  survival_percent = alive / number_of_patients * 100) |> 
+  ggplot(mapping = aes(x = cancer_type,
+                       y = survival_percent,
+                       fill = sex)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Cancer type',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75))
+
+```
+
+In this plot, we can see ...
 
 ```{r}
 survival_curve_test <- clinical_augment |> 
@@ -100,3 +105,89 @@ g1 <- ggplot(data = survival_curve_test,
     legend.position = 'bottom')
 g1
 ```
+
+Survival curve shows ....
+
+In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment. Here, survival is thought of as a metric of cancer severity.
+
+By selecting only the DECEASED patients, the one case of skin cancer, non-melanoma, which showed a 100% survival percentage in the histogram above.
+
+```{r}
+clinical_mutation |> 
+  filter(status == "DECEASED") |>
+  mutate(cancer_type = fct_reorder(cancer_type, os_months)) |>
+  ggplot(aes(x = os_months,
+             y = cancer_type))+
+  geom_boxplot()+
+  labs(x = "Survival (months)",
+       y = "",
+       title = "Overal survival of deseased patients for various cancer types")
+```
+
+This plot shows the general survival of patients with different types of cancer. Highest median number of months is for renal cell carcinoma, though there is quite a large variation. Colorectal and breast cancer are at the bottom and show less variation in the number of months survived.
+
+### Analysis of survival based on characteristics of the mutations 
+
+***From the joint table (clincal_mutation), patients are filtered to keep only those who died. Then mutation length is summarized, as patients often have multiple mutations. Grouping here doesn't duplicate patients as each patient has only one number of mutations, cancer type and os_month value***
+
+```{r}
+patient_mutation_summary <- clinical_mutation |> 
+                              select(patient_id, length_mutation, status, total_mutations, os_months, cancer_type)|> 
+                              filter(status == "DECEASED") |> 
+                              group_by(patient_id, os_months, total_mutations, cancer_type) |> 
+                              summarize(mean_length_mutation = mean(length_mutation),
+                                        max_length_mutation = max(length_mutation))
+```
+
+Fitting a linear model for each cancer type, relating the number of months survived to the length of the mutation.
+
+```{r}
+patient_mutation_estimate <-  patient_mutation_summary |> 
+                              group_by(cancer_type) |> 
+                              nest() |> 
+                              ungroup() |> 
+                              mutate(model_object = map(.x= data,
+                                                        .f = ~lm(formula = os_months ~ mean_length_mutation,
+                                                                 data = .x)),
+                                     model_object_tidy = map(.x = model_object,
+                                                             .f = ~tidy(.x, 
+                                                                        conf.int = TRUE,
+                                                                        conf.level = 0.95))) |> 
+                                     unnest(model_object_tidy) |> 
+                                     filter(!term == "(Intercept)") |> 
+                                     select(c(cancer_type, p.value, estimate, conf.low, conf.high)) |> 
+                                     ungroup() |> 
+                                     mutate(q.value = p.adjust(p.value, 
+                                                               method = "BH"),
+                                            is_significant = ifelse(q.value < 0.05, 
+                                                                    "yes", 
+                                                                    "no"))
+patient_mutation_estimate
+```
+
+According to the statistical summaries computed here, only Renal Cell Carcinoma shows a correlation between the number of month the patients survived and the length of the mutation in number of nucleotides.
+
+```{r}
+clinical_augment |> 
+  group_by(status) |> 
+  filter(cancer_type == "Renal Cell Carcinoma") |> 
+  distinct(patient_id) |> 
+  count()
+```
+
+There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the analysis above, having died.
+
+```{r}
+patient_mutation_summary |> 
+    filter(cancer_type == "Renal Cell Carcinoma") |> 
+    ggplot(aes(x = mean_length_mutation,
+               y = os_months))+
+    geom_point(alpha = 0.5)+
+    geom_smooth(method = "lm")+
+    labs(x = "Average length of mutation",
+         y = "Survival (months)",
+         title = "Survival as a function of average mutation length in patients with Renal Cell Carcinoma")+
+    theme(plot.title = element_text(size = 12))
+```
+
+However, from this plot, we can see that the correlation is not very pronounced. What can be observed is that mutations are generally SNPs (length of 1) and that surprisingly, longer mutations are seemingly correlated to longer survival.
