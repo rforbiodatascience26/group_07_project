@@ -406,10 +406,9 @@
 <p><strong>Data used:</strong></p>
 <p>TMB and Immunotherapy from cBioPortal for cancer genomics</p>
 <p>by (MSK, Nat Genet 2019)</p>
-<div class="quarto-figure quarto-figure-center">
+<div class="quarto-figure quarto-figure-left">
 <figure>
-<p><a href="https://www.cbioportal.org/datasets"><img data-src="images/clipboard-3840736939.png" alt="cBioPortal logo"></a></p>
-<figcaption>cBioPortal logo</figcaption>
+<p><a href="https://www.cbioportal.org/datasets"><img data-src="images/clipboard-3840736939.png" class="quarto-figure quarto-figure-left"></a></p>
 </figure>
 </div>
 </section>
@@ -461,6 +460,51 @@
 <h2>Data representation</h2>
 <p>Put different interesting and aesthetically pleasing plots here</p>
 <p>Possibly add more slides if we have a lot of plots we want to show off</p>
+</section>
+<section id="plots" class="slide level2">
+<h2>Plots</h2>
+<div class="columns">
+<div class="column" data-smaller="" style="width:35%;">
+<p>Number of mutations on different chromosomes</p>
+<hr>
+<p>Patient survival months, based on length of mutations</p>
+</div><div class="column" style="width:65%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-1-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-2-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="more-plots" class="slide level2">
+<h2>More plots</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<p>Top 20 driver gene frequencies in each cancer type</p>
+</div><div class="column" style="width:65%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-3-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
 </section>
 <section id="discussion" class="slide level2">
 <h2>Discussion</h2>
@@ -652,12 +696,12 @@
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1600,
 
-        height: 700,
+        height: 900,
 
         // Factor of the display size that should remain empty around the content
-        margin: 0.1,
+        margin: 3.0e-2,
 
         math: {
           mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
@@ -686,6 +730,44 @@
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
