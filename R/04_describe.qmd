@@ -4,6 +4,15 @@ format: html
 ---
 
 ```{r}
+#| message: false
+# Load libraries
+
+library("tidyverse")
+library("here")
+```
+
+
+```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
 # Exploring the clinical data
@@ -27,7 +36,19 @@ clinical_augment |>
                                     FALSE)) |>
   View()
 ```
-The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively.
+The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively. Let's plot the distribution of cancer types accross the dataset:
+
+```{r}
+clinical_augment |>
+  ggplot(aes(x = fct_infreq(cancer_type))) +
+  geom_bar() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1)) +
+  labs(x = "Cancer type",
+       y = "Number of samples",
+       title = "Number of samples per cancer type")
+```
 
 ```{r}
 clinical_augment |> 
@@ -36,20 +57,16 @@ clinical_augment |>
   summarise(average_survival_months = mean(os_months)) |> 
   arrange(average_survival_months)
 ```
-# Exploring the types of mutations (which genes, where in the genome)
+There seems to be no evident correlation between the age and the survival months.
+
 ```{r}
-mutation_augment |> 
-  group_by(hugo_symbol) |> 
-  ggplot(aes(x = hugo_symbol))+
-  geom_bar()+
-  labs(title = "Number of mutations associated to genes",
-       x = "Hugo symbol of affected gene",
-       y = "Number of mutations")+
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1
-  ))
+clinical_mutation <- mutation_augment |>
+  left_join(clinical_augment,
+            by = c("patient_id",
+                   "tumor_barcode" = "sample_barcode"))
 ```
+
+
 ```{r}
 clinical_mutation |> 
   group_by(hugo_symbol, cancer_type) |> 
