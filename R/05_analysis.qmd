@@ -1,36 +1,25 @@
 ---
-title: "05_analysis"
+title: "Analysis of survival and characteristics of mutations"
 format: html
 ---
 
-### Loading libraries
+The aim of this analysis is to explore the survival rate of patients and how the characteristics of the mutations (variants, length, location with respect to chromosomes) may affect survival.
+
+#### Loading libraries and the data
 
 ```{r}
 #| message: false
-library(tidyverse)
+library(patchwork)
 library(here)
-```
+library(ggplot2)
+library(tidyverse)
+library(purrr)
+library(broom)
 
-### Loading the data
-
-Uses the one created in the end of the 02_clean file
-
-```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
 
-```{r}
-clinical_augment
-```
-
-```{r}
-g1 <- ggplot(data = clinical_augment,
-            mapping = aes(y = cancer_type,
-                          x = os_months,
-                          color = sex)) + 
-  geom_boxplot()
-g1
-```
+## Analysis of survival based on cancer type
 
 ```{r}
 survival_percentage <- clinical_augment |> 
