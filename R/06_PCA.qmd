@@ -6,7 +6,8 @@ format: html
 ## Aim
 
 Run a PCA on the number of mutations in the top 20 genes of each sample, to
-see whether cancer types or survival status form clusters. 
+see whether cancer types or survival status form clusters, and identify genes 
+that are associated to particular types of cancer
 
 ## Load libraries
 
@@ -110,20 +111,31 @@ colorectal cancer. Let's verify it with a box plot:
 ```{r}
 # Box plot of PC2 in melanoma vs colorectal cancer
 
-pca_scores |>
-  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer")) |>
+pc2_subset <- pca_scores |>
+  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer"))
+
+pc2_test <- wilcox.test(PC2 ~ cancer_type,
+                        data = pc2_subset)
+
+pc2_test
+
+pc2_subset |>
   ggplot(aes(x = cancer_type,
              y = PC2,
              fill = cancer_type)) +
-  geom_boxplot(alpha=0.6) +
+  geom_boxplot(alpha = 0.6) +
   theme_bw() +
   theme(legend.position = "none") +
   labs(x = "Cancer type",
        y = "PC2",
-       title = "PC2 in melanoma vs colorectal cancer")
+       title = "PC2 in melanoma vs colorectal cancer",
+       subtitle = str_c("Wilcoxon rank-sum test, p = ",
+                        format.pval(pc2_test$p.value,
+                                    digits = 3)))
 ```
-Indeed, melanoma have a greater PC2 value than colorectal cancer overall. We can
-then investigate the genes that drive PC2 most
+Indeed, melanoma have a greater PC2 value than colorectal cancer overall, and
+the extremely small p-value of our test confirms significance. We can then
+investigate the genes that drive PC2 most
 
 ## Genes driving PC2
 
@@ -196,4 +208,7 @@ heatmap_data |>
     panel.grid = element_blank()
   )
 ```
-
+Indeed, KRAS and APC mutations appear to be correlated with colorectal cancer,
+while TERT mutations seem correlated with melanoma. Even though the PCA is not 
+very informative, because mutations alone don't carry enough biological context,
+it allowed to draft hypothesises and confirm them with the heatmap.
