@@ -8,7 +8,7 @@ editor: visual
 
 The following code is an implementation of the cleaning steps of the data for this project.
 
-### Loading the libraries and the data
+### Loading libraries and the data
 
 ```{r}
 #| message: false
