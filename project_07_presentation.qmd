@@ -33,13 +33,13 @@ by (MSK, Nat Genet 2019)
 ## Data wrangling
 
 ::: column
--   Selected interesting columns to work with
+-   Selected variables of interest in all three data sets
 
 -   Renamed columns using "snake_case"
 
--   Creating age groups
+-   Changed variable types to factors (age_group and chromosome)
 
--   Joining patients and samples table
+-   Joined patients and samples table by patient_id
 :::
 
 ::: column
@@ -51,6 +51,14 @@ patients_clean <- patients_clean |>
                                                         "50-60",
                                                         "61-70",
                                                         ">71")))
+
+mutations_clean <- mutations_clean |> 
+                      mutate(patient_id = str_sub(Tumor_Sample_Barcode, 
+                                                  start = 1, 
+                                                  end = 9)) |> 
+                      mutate(tumor_barcode = str_sub(Tumor_Sample_Barcode, 
+                                                            start = 11),
+                             .keep = "unused") |> ...
 ```
 :::
 

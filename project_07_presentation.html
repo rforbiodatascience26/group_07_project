@@ -427,10 +427,10 @@
 <h2>Data wrangling</h2>
 <div class="column">
 <ul>
-<li><p>Selected interesting columns to work with</p></li>
+<li><p>Selected variables of interest in all three data sets</p></li>
 <li><p>Renamed columns using “snake_case”</p></li>
-<li><p>Creating age groups</p></li>
-<li><p>Joining patients and samples table</p></li>
+<li><p>Changed variable types to factors (age_group and chromosome)</p></li>
+<li><p>Joined patients and samples table by patient_id</p></li>
 </ul>
 </div><div class="column">
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>patients_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
@@ -439,7 +439,15 @@
 <span id="cb1-4"><a href=""></a>                                                        <span class="st">"31-50"</span>,</span>
 <span id="cb1-5"><a href=""></a>                                                        <span class="st">"50-60"</span>,</span>
 <span id="cb1-6"><a href=""></a>                                                        <span class="st">"61-70"</span>,</span>
-<span id="cb1-7"><a href=""></a>                                                        <span class="st">"&gt;71"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href=""></a>                                                        <span class="st">"&gt;71"</span>)))</span>
+<span id="cb1-8"><a href=""></a></span>
+<span id="cb1-9"><a href=""></a>mutations_clean <span class="ot">&lt;-</span> mutations_clean <span class="sc">|&gt;</span> </span>
+<span id="cb1-10"><a href=""></a>                      <span class="fu">mutate</span>(<span class="at">patient_id =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
+<span id="cb1-11"><a href=""></a>                                                  <span class="at">start =</span> <span class="dv">1</span>, </span>
+<span id="cb1-12"><a href=""></a>                                                  <span class="at">end =</span> <span class="dv">9</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-13"><a href=""></a>                      <span class="fu">mutate</span>(<span class="at">tumor_barcode =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
+<span id="cb1-14"><a href=""></a>                                                            <span class="at">start =</span> <span class="dv">11</span>),</span>
+<span id="cb1-15"><a href=""></a>                             <span class="at">.keep =</span> <span class="st">"unused"</span>) <span class="sc">|&gt;</span> ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></section>
 <section id="data-augmentation" class="slide level2">
 <h2>Data augmentation</h2>
