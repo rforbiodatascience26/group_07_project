@@ -26,6 +26,7 @@ mutations <- read_tsv(here("data", "01_mutations.tsv"))
 
 #### Selecting variables of interest
 
+
 ```{r}
 mutations_clean <- mutations |> 
                       select(c("Tumor_Sample_Barcode",
@@ -94,7 +95,6 @@ patients_clean <- patients |>
                                                           "61-70",
                                                           ">71")))
 ```
-
 #### Compairing patients list to mutations
 
 Selecting one patient (chosen randomly)

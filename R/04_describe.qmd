@@ -24,6 +24,49 @@ load(here("data", "03_cancer_augment.RData"))
 
 From the data cleaning, we know that there are 1610 patients in this data set.
 
+# Descriptive plots
+
+## Cancer type and number of mutations
+
+This plot shows the correlation between the different types of cancer, and the number of mutations that are present in the individual patients.
+
+```{r}
+ggplot(data = clinical_augment,
+       mapping = aes(x = cancer_type,
+                     y = total_mutations,
+                     color = cancer_type)) +
+  geom_jitter() +
+    theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(title = "Cancer type and number of mutations", 
+       subtitle = "The dots indicate how many mutations the individual patient has",
+       x = "Cancer type",
+       y = "Number of mutations") +
+  theme(legend.position = "none")
+```
+
+### Status and gender, colored by age group
+
+Visualizing the LIVING and DECEASED patients based on gender and colored by age group.
+
+```{r}
+ggplot(data = clinical_augment,
+       mapping = aes(x = status,
+                     y = sex,
+                     color = age_group))+
+  scale_size_area(max_size = 20)+
+  geom_count(position = position_dodge(width = 0.75),
+             alpha = 0.8)+
+  labs(size = "Count",
+       x = "Patient status",
+       y = "Gender") 
+```
+
+# Exploring the clinical data
+
 ```{r}
 clinical_augment |> 
   group_by(sex, status) |> 
@@ -31,7 +74,6 @@ clinical_augment |>
   group_by(sex) |> 
   mutate(percentage = (n/sum(n))*100)
 ```
-
 The patients in this study are about two thirds men to one third women, with roughly a 50% survival rate, though survival of women is slightly lower than that of men on first inspection.
 
 ```{r}
@@ -82,6 +124,19 @@ clinical_augment |>
 Eleven types of cancer are tracked in this data set, two of which (breast cancer and skin cancer, non-melanoma) affect only women or men respectively. Only one patient is affected by skin cancer.
 
 ```{r}
+clinical_augment |>
+  ggplot(aes(x = fct_infreq(cancer_type))) +
+  geom_bar() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1)) +
+  labs(x = "Cancer type",
+       y = "Number of samples",
+       title = "Number of samples per cancer type")
+```
+
+
+```{r}
 clinical_augment |> 
   filter(status == "DECEASED") |> 
   group_by(age_group, cancer_type) |>
@@ -123,6 +178,7 @@ ggplot(data = clinical_augment,
 ```
 
 **EXPLANATION**
+There seems to be no evident correlation between the age and the survival months.
 
 ```{r}
 clinical_mutation |> 
@@ -170,5 +226,4 @@ clinical_mutation |>
        fill = "Age group",
        title = "Location of mutations in chromosomes")
 ```
-
 This graph shows the location of the mutations with respect to the chromosomes. The most affected chromosome is number 17, while the least affected is number 21. There are no mutations associated to the Y chromosome in this data set. Age does not seem to have much impact on the location of the mutation.

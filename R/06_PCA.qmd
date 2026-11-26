@@ -6,9 +6,20 @@ format: html
 ## Aim
 
 Run a PCA on the number of mutations in the top 20 genes of each sample, to
-see whether cancer types or survival status form clusters. 
+see whether cancer types or survival status form clusters, and identify genes 
+that are associated to particular types of cancer
 
-## Load Data
+## Load libraries
+
+```{r}
+#| message: false
+
+library("tidyverse")
+library("here")
+```
+
+
+## Load data
 
 ```{r}
 load(here("data", "03_cancer_augment.RData"))
@@ -100,20 +111,31 @@ colorectal cancer. Let's verify it with a box plot:
 ```{r}
 # Box plot of PC2 in melanoma vs colorectal cancer
 
-pca_scores |>
-  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer")) |>
+pc2_subset <- pca_scores |>
+  filter(cancer_type %in% c("Melanoma", "Colorectal Cancer"))
+
+pc2_test <- wilcox.test(PC2 ~ cancer_type,
+                        data = pc2_subset)
+
+pc2_test
+
+pc2_subset |>
   ggplot(aes(x = cancer_type,
              y = PC2,
              fill = cancer_type)) +
-  geom_boxplot(alpha=0.6) +
+  geom_boxplot(alpha = 0.6) +
   theme_bw() +
   theme(legend.position = "none") +
   labs(x = "Cancer type",
        y = "PC2",
-       title = "PC2 in melanoma vs colorectal cancer")
+       title = "PC2 in melanoma vs colorectal cancer",
+       subtitle = str_c("Wilcoxon rank-sum test, p = ",
+                        format.pval(pc2_test$p.value,
+                                    digits = 3)))
 ```
-Indeed, melanoma have a greater PC2 value than colorectal cancer overall. We can
-then investigate the genes that drive PC2 most
+Indeed, melanoma have a greater PC2 value than colorectal cancer overall, and
+the extremely small p-value of our test confirms significance. We can then
+investigate the genes that drive PC2 most
 
 ## Genes driving PC2
 
@@ -130,3 +152,68 @@ pca_loadings
 KRAS, TERT and APC are the genes driving PC2 most. It suggests that those genes
 have a role either in melanoma or colorrectal cancer .Plotting a heatmap would
 allow to verify those hypothesises
+<<<<<<< HEAD
+=======
+
+## Heatmap of top 20 Driver Genes
+
+```{r}
+# Reshape to long format and calculate mutation percentage per cancer type
+heatmap_data <- clinical_augment |>
+  # Gather all 20 num_mut_* columns into two columns: 'gene' and 'mut_count'
+  pivot_longer(
+    cols = starts_with("num_mut_"),
+    names_to = "gene",
+    values_to = "mut_count"
+  ) |>
+  # Clean up the gene names by removing the "num_mut_" prefix
+  mutate(gene = str_remove(gene, "^num_mut_")) |>
+  # Group by cancer type and gene
+  group_by(cancer_type, gene) |>
+  # Calculate the % of samples in that cancer type that have at least 1 mutation
+  summarise(
+    n_samples = n(),
+    n_mutated = sum(mut_count > 0),
+    pct_mutated = (n_mutated / n_samples) * 100,
+    .groups = "drop"
+  )
+```
+
+
+```{r}
+heatmap_data |>
+  # Order genes so the most frequently mutated ones appear at the top
+  mutate(gene = fct_reorder(gene, pct_mutated, .fun = mean)) |>
+  ggplot(aes(x = cancer_type, y = gene, fill = pct_mutated)) +
+  # Draw the heatmap tiles with thin white borders
+  geom_tile(color = "white", linewidth = 0.4) +
+  # Add exact percentage numbers inside the tiles
+  geom_text(aes(label = round(pct_mutated, 0)), size = 2.8, color = "black") +
+  # Use a clean color gradient from light to dark
+  scale_fill_gradient(
+    low = "#f7fbff",
+    high = "#08519c",
+    name = "Mutated\nSamples (%)"
+  ) +
+  labs(
+    title = "Mutation Frequency of Top 20 Driver Genes Across Cancer Types",
+    subtitle = "Values inside tiles indicate percentage (%) of samples with ≥1 mutation",
+    x = "Cancer Type",
+    y = "Driver Gene"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  )
+```
+On the heatmap, the x axis groups the patients by cancer types and on the y axis
+we get the 20 driver genes and the tiles essentially show us what percentage out
+of all the patients in that specific cancer type, have at least one mutation 
+in that specific gene.
+
+Indeed, KRAS and APC mutations appear to be correlated with colorectal cancer,
+while TERT mutations seem correlated with melanoma. Even though the PCA is not 
+very informative, because mutations alone don't carry enough biological context,
+it allowed to draft hypothesises and confirm them with the heatmap.
+>>>>>>> main

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
+<<<<<<< HEAD
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.5.57">
 
@@ -88,6 +89,54 @@ const layoutMarginEls = () => {
         const marginBottom = parseFloat(marginChildStyle["marginBottom"]);
         const margin = lastBottom - top + marginBottom;
         marginChild.style.marginTop = `${margin}px`;
+=======
+  <title>Project 07 presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="project_07_presentation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="project_07_presentation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+>>>>>>> main
       }
       const styles = window.getComputedStyle(marginChild);
       const marginTop = parseFloat(styles["marginTop"]);
@@ -3076,6 +3125,7 @@ vertical-align: -.125em;
 
 </head>
 
+<<<<<<< HEAD
 <body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
@@ -3122,6 +3172,30 @@ vertical-align: -.125em;
 </section>
 <section id="materials-and-methods" class="level2">
 <h2 class="anchored" data-anchor-id="materials-and-methods">Materials and Methods</h2>
+=======
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Project 07 presentation</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+… Luka Falk Jørgensen (s245750), Nikolaj Krog (s245342) … 
+</div>
+</div>
+</div>
+
+</section>
+<section id="raw-data" class="slide level2">
+<h2>Raw data</h2>
+<p><strong>Data used:</strong></p>
+<p>TMB and Immunotherapy from cBioPortal for cancer genomics</p>
+<p>by (MSK, Nat Genet 2019)</p>
+<div class="quarto-figure quarto-figure-left">
+<figure>
+<p><a href="https://www.cbioportal.org/datasets"><img data-src="images/clipboard-3840736939.png" class="quarto-figure quarto-figure-left"></a></p>
+</figure>
+</div>
+>>>>>>> main
 <p>3 files:</p>
 <ul>
 <li><p>Patient data</p></li>
@@ -3130,8 +3204,13 @@ vertical-align: -.125em;
 </ul>
 <p>1661 patients represented in data set</p>
 </section>
+<<<<<<< HEAD
 <section id="data-wrangling" class="level2">
 <h2 class="anchored" data-anchor-id="data-wrangling">Data wrangling</h2>
+=======
+<section id="data-cleaning" class="slide level2">
+<h2>Data cleaning</h2>
+>>>>>>> main
 <div class="column">
 <ul>
 <li><p>Selected variables of interest in all three data sets</p></li>
@@ -3139,6 +3218,7 @@ vertical-align: -.125em;
 <li><p>Changed variable types to factors (age_group and chromosome)</p></li>
 <li><p>Joined patients and samples table by patient_id</p></li>
 </ul>
+<<<<<<< HEAD
 </div>
 <div class="column">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>patients_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
@@ -3160,20 +3240,39 @@ vertical-align: -.125em;
 </section>
 <section id="data-augmentation" class="level2">
 <h2 class="anchored" data-anchor-id="data-augmentation">Data augmentation</h2>
+=======
+</div><div class="column">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>patients_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
+<span id="cb1-2"><a href=""></a>                    <span class="fu">mutate</span>(<span class="at">age_group =</span> <span class="fu">factor</span>(age_group,</span>
+<span id="cb1-3"><a href=""></a>                                              <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"&lt;30"</span>,</span>
+<span id="cb1-4"><a href=""></a>                                                        <span class="st">"31-50"</span>,</span>
+<span id="cb1-5"><a href=""></a>                                                        <span class="st">"50-60"</span>,</span>
+<span id="cb1-6"><a href=""></a>                                                        <span class="st">"61-70"</span>,</span>
+<span id="cb1-7"><a href=""></a>                                                        <span class="st">"&gt;71"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></section>
+<section id="data-wrangling" class="slide level2">
+<h2>Data wrangling</h2>
+>>>>>>> main
 <p><strong>Mutation placement</strong></p>
 <p>2 columns: “end_position” and “start_position” -&gt; length_mutation</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mutation_augment <span class="ot">&lt;-</span> mutations <span class="sc">|&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">length_mutation =</span> end_position <span class="sc">-</span> start_position,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">is_top_gene =</span> hugo_symbol <span class="sc">%in%</span> top_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
+<<<<<<< HEAD
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
 <p>Should be seeing results slide</p>
+=======
+<section id="descriptive-overview" class="slide level2">
+<h2>Descriptive overview</h2>
+>>>>>>> main
 <ul>
-<li><p>What have we done? How does our final data set look?</p></li>
+<li><p>What have we done? What does our data look like</p></li>
 <li><p>What can we use this data for? (show plots on next slide)</p></li>
 </ul>
 </section>
+<<<<<<< HEAD
 <section id="data-representation" class="level2">
 <h2 class="anchored" data-anchor-id="data-representation">Data representation</h2>
 <p>Put different interesting and aesthetically pleasing plots here</p>
@@ -3181,6 +3280,81 @@ vertical-align: -.125em;
 </section>
 <section id="discussion" class="level2">
 <h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+=======
+<section id="survival" class="slide level2">
+<h2>Survival</h2>
+<p>Put different interesting and aesthetically pleasing plots here</p>
+<p>Possibly add more slides if we have a lot of plots we want to show off</p>
+</section>
+<section id="mutations" class="slide level2">
+<h2>Mutations</h2>
+<div class="columns">
+<div class="column" data-smaller="" style="width:35%;">
+<p>Number of mutations on different chromosomes</p>
+<hr>
+<p>Patient survival months, based on length of mutations</p>
+</div><div class="column" style="width:65%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-1-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-2-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="pca" class="slide level2">
+<h2>PCA</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-3-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-4-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-5-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="heatmap" class="slide level2">
+<h2>Heatmap</h2>
+
+<img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-6-1.svg" width="960" class="r-stretch"></section>
+<section id="discussion" class="slide level2">
+<h2>Discussion</h2>
+>>>>>>> main
 <p>Should be seeing discussion slide</p>
 <ul>
 <li><p>What else could we have done?</p></li>
@@ -3189,6 +3363,7 @@ vertical-align: -.125em;
 </ul>
 </section>
 
+<<<<<<< HEAD
 </main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -3264,6 +3439,264 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
+=======
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="project_07_presentation_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="project_07_presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="project_07_presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="project_07_presentation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 3.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+>>>>>>> main
         }
       }
       return codeEl.innerText;
