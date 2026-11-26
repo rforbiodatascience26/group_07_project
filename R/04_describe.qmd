@@ -1,23 +1,28 @@
 ---
-title: "04_describe"
+title: "Describing the data"
 format:
   html:
     embed-resources: true
 editor: visual
 ---
-### Library
+
+The aim of the following code is to broadly describe the data before diving into a more specific analysis.
+
+### Loading libraries and the data
+
 ```{r}
 #| message: false
 library(here)
 library(dplyr)
 library(ggplot2)
-```
+library(patchwork)
 
-
-```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
-# Exploring the clinical data
+
+#### Exploring the patients
+
+From the data cleaning, we know that there are 1610 patients in this data set.
 
 ```{r}
 clinical_augment |> 
@@ -26,72 +31,127 @@ clinical_augment |>
   group_by(sex) |> 
   mutate(percentage = (n/sum(n))*100)
 ```
-The patients to which the data relates to are about two thirds men to one third women, with roughly 50% survival rate, though survival of women is sligthly lower than that of men.
+
+The patients in this study are about two thirds men to one third women, with roughly a 50% survival rate, though survival of women is slightly lower than that of men on first inspection.
+
+```{r}
+#| fig-width: 9
+p1 <- clinical_augment |> 
+        ggplot(aes(x = sex,
+                   fill = status))+
+        geom_bar(alpha = 0.5)+
+  labs(x= "",
+       y = "Number of patients",
+       fill = "Status",
+       title = "Profiles of the patients in the cancer study")+
+  theme_minimal()
+p2 <- ggplot(data = clinical_augment,
+       mapping = aes(x = status,
+                     y = sex,
+                     colour = age_group))+
+  scale_size_area(max_size = 10)+
+  geom_count(position = position_dodge(width = 0.75),
+             alpha = 0.5)+
+  labs(size = "Count",
+       x = "Status",
+       y = "",
+       colour = "Age")+
+  theme_minimal()
+
+p1+p2+ plot_layout(widths = c(1, 5))
+```
+
+Few patients are under 30 years old, with most in the 61-70 age group. **WHAT CAN BE SAID ABOUT THE POSITION OF THE DOTS ON THE GRID ?**
 
 ```{r}
 clinical_augment |> 
   group_by(cancer_type, sex) |> 
-  count() |>
-  group_by(cancer_type) |> 
-  mutate(affects_both_sex = if_else(n()>1,
-                                    TRUE,
-                                    FALSE))
+  ggplot(aes(x = cancer_type,
+             fill = sex))+
+  geom_bar(alpha = 0.7)+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1))+
+  labs(x = "Cancer type",
+       y = "Number of affected patients",
+       fill = "Sex",
+       title = "Number of patients affected by each type of cancer")
 ```
-The data collected to 11 types of cancer, two of which (breast cancer and skin cancer) affect only women or men respectively.
+
+Eleven types of cancer are tracked in this data set, two of which (breast cancer and skin cancer, non-melanoma) affect only women or men respectively. Only one patient is affected by skin cancer.
 
 ```{r}
 clinical_augment |> 
   filter(status == "DECEASED") |> 
-  group_by(age_group) |>
+  group_by(age_group, cancer_type) |>
   summarise(average_survival_months = mean(os_months)) |> 
-  arrange(average_survival_months)
+  arrange(average_survival_months) |> 
+  ggplot(aes(x = age_group,
+             y = average_survival_months,
+             colour = cancer_type))+
+  geom_point(alpha = 0.7)+
+  theme_minimal()+
+  labs(x = "Age group",
+       y = "Average survival (months)",
+       colour = "Cancer type",
+       title = "Average survival per cancer type")
 ```
-# Exploring the types of mutations (which genes, where in the genome)
+
+Across age groups, melanoma and renal cell carcinoma are associated with higher survival than other cancer types, expect for the \<30 age group, where renal cell carcinoma is associated with the shortest survival time. The majority of cancer types seem to have an average survival time between 5 and 15 months. Patients under 30 years old have the shortest average survival time, while the patients between 50 and 60 have the longest on average.
+
+#### Exploring the types of mutations
+
+Visualizing the number of mutations that affect each patient.
+
 ```{r}
-mutation_augment |> 
-  group_by(hugo_symbol) |> 
-  ggplot(aes(x = hugo_symbol))+
-  geom_bar()+
-  labs(title = "Number of mutations associated to genes",
-       x = "Hugo symbol of affected gene",
-       y = "Number of mutations")+
-  theme(axis.text.x = element_text(
-    angle = 45,
-    hjust = 1
-  ))
+ggplot(data = clinical_augment,
+       mapping = aes(x = cancer_type,
+                     y = total_mutations,
+                     color = cancer_type)) +
+  geom_jitter() +
+    theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(title = "Cancer type and number of mutations", 
+       subtitle = "The dots indicate how many mutations the individual patient has",
+       x = "Cancer type",
+       y = "Number of mutations") +
+  theme(legend.position = "none")
 ```
+
+**EXPLANATION**
+
 ```{r}
 clinical_mutation |> 
-  group_by(hugo_symbol, cancer_type) |> 
-  count() |> 
-  arrange(desc(n))
+  filter(is_top_gene) |> 
+  group_by(hugo_symbol) |> 
+  ggplot(aes(x = hugo_symbol,
+             fill = cancer_type))+
+  geom_bar(alpha = 0.5)+
+  labs(title = "Number of mutations associated to top 20 genes",
+       x = "Hugo symbol of affected gene",
+       y = "Number of mutations",
+       fill = "Cancer type")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1))
 ```
-There are big variations in the number of genes with mutations. Some genes are only affected once, other multiple times.  
+
+There are big variations in the number of genes with mutations. The TP53 gene is the most mutated gene in this data set and appears in all the cancer types.
 
 ```{r}
 mutation_augment |> 
   group_by(hugo_symbol) |> 
   count(name = "nbr_occurences") |>
   ungroup() |> 
-  summarise(average = mean(nbr_occurences))
-```
-```{r}
-dim(clinical_mutation)
+  summarise(mean = mean(nbr_occurences),
+            max = max(nbr_occurences),
+            min = min(nbr_occurences),
+            median = median(nbr_occurences))
 ```
 
-```{r}
-clinical_mutation |> 
-  distinct(patient_id, chromosome) |> 
-  count()
-```
-```{r}
-clinical_mutation |> 
-  distinct(tumor_barcode)
-```
-```{r}
-clinical_mutation |> 
-  distinct(patient_id, tumor_barcode) |> 
-  group_by(patient_id) |> 
-  count()
-```
-Each patient has one tumor_barcode associated to them, but there are only 8 tumor_barcodes. 
+This table summarizes the number of mutations affecting each gene. This shows the considerable variation in how genes are affected in all types of cancer.
