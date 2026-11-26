@@ -1,30 +1,26 @@
 ---
-title: "03_augment"
+title: "Augmenting the data "
 format:
   html:
     embed-resources: true
 editor: visual
 ---
+The following code is the implementation of the augmentation steps of this project.
 
+## Loading libraries and the data 
 ```{r}
 #| message: false
 library(here)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-```
 
-## Load data from step 2
-
-```{r}
 load(here("data", "02_cancer_clean.RData"))
 ```
 
-
 ## Top mutated genes
 
-For each gene, count how many different samples carry at least one mutation
-in it. A sample with several mutations in the same gene counts only once.
+For each gene, count how many different samples carry at least one mutation in it. A sample with several mutations in the same gene counts only once.
 
 ```{r}
 n_samples = nrow(clinical)
@@ -58,8 +54,7 @@ gene_mutation_freq |>
        title = "Mutation frequency of the 100 most mutated genes")
 ```
 
-The curves starts to flatten and decrease very slowly after ran 20, so we have
-chosen to focus on the top 20 genes only.
+The curve starts to flatten and decrease very slowly after rank 20, so we have chosen to focus on the top 20 genes only.
 
 ```{r}
 n_top_genes <- 20
@@ -87,14 +82,15 @@ mutation_augment <- mutation_augment |>
 
 ## Gene Matrix of top 20 genes
 
-Reshape the mutation_augment list from a long format into a wide table so that
-each row represents one unique tumor sample and each of the 20 genes becomes
-its own dedicated column.
+Reshape the `mutation_augment` list from a long format into a wide table so that each row represents one unique tumor sample and each of the 20 genes becomes its own dedicated column.
 
 ```{r}
 gene_matrix <- mutation_augment |>
   filter(hugo_symbol %in% top_genes) |>
-  count(patient_id, tumor_barcode, hugo_symbol, name = "n_mut") |>
+  count(patient_id, 
+        tumor_barcode, 
+        hugo_symbol, 
+        name = "n_mut") |>
   pivot_wider(
     names_from = hugo_symbol,
     values_from = n_mut,
@@ -111,9 +107,11 @@ Keep the samples with no mutation rows and give them 0
 clinical_augment <- clinical |>
   left_join(
     gene_matrix,
-    by = c("patient_id" = "patient_id", "sample_barcode" = "tumor_barcode")
+    by = c("patient_id" = "patient_id", 
+           "sample_barcode" = "tumor_barcode")
   ) |>
-  mutate(across(starts_with("num_mut_"), ~ replace_na(.x, 0)))
+  mutate(across(starts_with("num_mut_"), 
+                ~ replace_na(.x, 0)))
 ```
 
 Calculate total number of mutations per sample and number of distinct mutated genes
@@ -131,7 +129,8 @@ sample_mut_summary <- mutation_augment |>
 clinical_augment <- clinical_augment |>
   left_join(
     sample_mut_summary,
-    by = c("patient_id" = "patient_id", "sample_barcode" = "tumor_barcode")
+    by = c("patient_id" = "patient_id", 
+           "sample_barcode" = "tumor_barcode")
   ) |>
   mutate(
     total_mutations = replace_na(total_mutations, 0),
@@ -139,11 +138,12 @@ clinical_augment <- clinical_augment |>
   )
 ```
 
+Checking that `number_mutations`and `total_mutations` are the same.
 ```{r}
 clinical_augment |> 
   filter(number_mutations != total_mutations)
 ```
-
+Removing redundant column.
 ```{r}
 clinical_augment <- clinical_augment |> 
                         select(-number_mutations)
@@ -157,11 +157,12 @@ clinical_mutation <- mutation_augment |>
                         full_join(clinical_augment, by = "patient_id")
 ```
 
+Checking that `tumor_barcode`and `sample_barcode` are the same
 ```{r}
 clinical_mutation |> 
   filter(tumor_barcode != sample_barcode)
 ```
-Since tumor_barcode and sample_barcode are essential the same variable, one of the columns can be droped.
+Removing redundant column.
 ```{r}
 clinical_mutation <- clinical_mutation |> 
                         select(-sample_barcode)

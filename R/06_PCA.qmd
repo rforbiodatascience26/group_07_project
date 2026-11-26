@@ -152,6 +152,8 @@ pca_loadings
 KRAS, TERT and APC are the genes driving PC2 most. It suggests that those genes
 have a role either in melanoma or colorrectal cancer .Plotting a heatmap would
 allow to verify those hypothesises
+<<<<<<< HEAD
+=======
 
 ## Heatmap of top 20 Driver Genes
 
@@ -214,3 +216,4 @@ Indeed, KRAS and APC mutations appear to be correlated with colorectal cancer,
 while TERT mutations seem correlated with melanoma. Even though the PCA is not 
 very informative, because mutations alone don't carry enough biological context,
 it allowed to draft hypothesises and confirm them with the heatmap.
+>>>>>>> main

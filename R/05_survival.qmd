@@ -6,9 +6,13 @@ format:
 editor: visual
 ---
 
+<<<<<<< HEAD:R/05_survival.qmd
+The aim of this analysis is to explore the survival rate of patients and how the characteristics of the mutations (variants, length) may affect survival.
+=======
 ## Check that the .html file is the same, and contains everything
 
 The aim of this analysis is to explore the survival rate of patients and how the characteristics of the mutations (variants, length, location with respect to chromosomes) may affect survival.
+>>>>>>> main:R/05_analysis.qmd
 
 #### Loading libraries and the data
 
@@ -90,7 +94,7 @@ clinical_augment |>
 
 ```
 
-In this plot, we can see ...
+**In this plot, we can see ...**
 
 ```{r}
 survival_curve_test <- clinical_augment |> 
@@ -121,6 +125,10 @@ g1 <- ggplot(data = survival_curve_test,
   labs(title = 'Overall survival by cancer type',
        x = 'Overall survival (months)',
        y = 'Survival probability',
+<<<<<<< HEAD:R/05_survival.qmd
+       color = 'Sex')+
+  theme_minimal()+
+=======
        color = 'Cancer types')+
   theme(
     plot.title = element_text(hjust = 0.5),
@@ -147,12 +155,16 @@ g1 <- ggplot(data = survival_curve_test |>
        x = 'Overall survival (months)',
        y = 'Survival probability',
        color = 'Cancer types')+
+>>>>>>> main:R/05_analysis.qmd
   theme(
     plot.title = element_text(hjust = 0.5),
     legend.position = 'bottom')
 g1
 ```
 
+<<<<<<< HEAD:R/05_survival.qmd
+**Survival curve shows ...**.
+=======
 To look more closely on two quite different, we have chosen glioma, one of the lowest survival percentage, and melanoma, one of the highest survival percentage.
 
 Here it is more clear, that the type of cancer impacts survival a lot.
@@ -160,10 +172,9 @@ Here it is more clear, that the type of cancer impacts survival a lot.
 In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
 
 Survival curve shows ....
+>>>>>>> main:R/05_analysis.qmd
 
-In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment. Here, survival is thought of as a metric of cancer severity.
-
-By selecting only the DECEASED patients, the one case of skin cancer, non-melanoma, which showed a 100% survival percentage in the histogram above.
+In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment.
 
 ```{r}
 clinical_mutation |> 
@@ -174,14 +185,30 @@ clinical_mutation |>
   geom_boxplot()+
   labs(x = "Survival (months)",
        y = "",
-       title = "Overal survival of deseased patients for various cancer types")
+       title = "Overal survival of deseased patients for various cancer types")+
+  theme_minimal()
 ```
 
 This plot shows the general survival of patients with different types of cancer. Highest median number of months is for renal cell carcinoma, though there is quite a large variation. Colorectal and breast cancer are at the bottom and show less variation in the number of months survived.
 
+<<<<<<< HEAD:R/05_survival.qmd
+```{r}
+clinical_mutation |> 
+  filter(status == "DECEASED") |>
+  ggplot(aes(x = variant_type,
+             y = os_months))+
+  geom_boxplot()+
+  theme_minimal()+
+  labs(x = "Type of mutation",
+       y = "Survival (months)",
+       title = "Survival of patients affected with different mutation types")
+```
+ONP (oligonucleotide polymorphism), which affect more than 3 consecutive nucleotides are the mutations with the highest median length of survival, while INS and DEL have a lower median length of survival.
+=======
 ### Analysis of survival based on characteristics of the mutations
+>>>>>>> main:R/05_analysis.qmd
 
-***From the joint table (clincal_mutation), patients are filtered to keep only those who died. Then mutation length is summarized, as patients often have multiple mutations. Grouping here doesn't duplicate patients as each patient has only one number of mutations, cancer type and os_month value***
+### Analysis of correlation between average length of mutation and survival
 
 ```{r}
 patient_mutation_summary <- clinical_mutation |> 
@@ -228,7 +255,7 @@ clinical_augment |>
   count()
 ```
 
-There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the analysis above, having died.
+There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the linear model fitting above.
 
 ```{r}
 patient_mutation_summary |> 
@@ -240,7 +267,8 @@ patient_mutation_summary |>
     labs(x = "Average length of mutation",
          y = "Survival (months)",
          title = "Survival as a function of average mutation length in patients with Renal Cell Carcinoma")+
+    theme_minimal()+
     theme(plot.title = element_text(size = 12))
 ```
 
-However, from this plot, we can see that the correlation is not very pronounced. What can be observed is that mutations are generally SNPs (length of 1) and that surprisingly, longer mutations are seemingly correlated to longer survival.
+From this plot, we can see that the correlation is not very pronounced. What can be observed is that mutations are generally SNPs (length of 1) and that surprisingly, longer mutations are seemingly correlated to longer survival.
