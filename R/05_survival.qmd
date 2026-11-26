@@ -88,7 +88,10 @@ clinical_augment |>
 
 ```
 
-**In this plot, we can see ...**
+The different survival rate for each cancer type, also depending on the sex. \
+This show that glioma has the lowest, and that melanoma has one of the highest survival rate.
+
+Skin cancer, Non-melanoma has a survival rate of 100%, because there is only data from one patient makes it misleading.
 
 ```{r}
 survival_curve_test <- clinical_augment |> 
@@ -156,8 +159,6 @@ To look more closely on two quite different, we have chosen glioma, one of the l
 Here it is more clear, that the type of cancer impacts survival a lot.
 
 In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
-
-Survival curve shows ....
 
 In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment.
 
