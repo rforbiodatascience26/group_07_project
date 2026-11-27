@@ -12,13 +12,14 @@ The aim of this analysis is to explore the survival rate of patients and how the
 
 ```{r}
 #| message: false
-library(patchwork)
-library(here)
-library(ggplot2)
-library(tidyverse)
-library(purrr)
-library(broom)
+library("patchwork")
+library("here")
+library("tidyverse")
+library("broom")
+library("gt")
+```
 
+```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
 
@@ -69,6 +70,7 @@ The highest chance of survival is for Skin-cancer, non-melanoma (this is only fo
 Disregarding the odd one, the one of the collectively highest survival percentage is the melanoma.
 
 ```{r}
+#| message: false
 clinical_augment |> 
   group_by(cancer_type, sex) |> 
   summarise(number_of_patients = n(),
@@ -195,6 +197,7 @@ ONP (oligonucleotide polymorphism), which affect more than 3 consecutive nucleot
 ### Analysis of correlation between average length of mutation and survival
 
 ```{r}
+#| message: false
 patient_mutation_summary <- clinical_mutation |> 
                               select(patient_id, length_mutation, status, total_mutations, os_months, cancer_type)|> 
                               filter(status == "DECEASED") |> 
@@ -226,7 +229,13 @@ patient_mutation_estimate <-  patient_mutation_summary |>
                                             is_significant = ifelse(q.value < 0.05, 
                                                                     "yes", 
                                                                     "no"))
-patient_mutation_estimate
+saveRDS(patient_mutation_estimate, here("data", "summary_lm.rds"))
+```
+
+```{r}
+patient_mutation_estimate |> 
+  gt(rowname_col = "cancer_type") |> 
+  tab_header(title = md("Statistical summaries of linear regression"))
 ```
 
 According to the statistical summaries computed here, only Renal Cell Carcinoma shows a correlation between the number of month the patients survived and the length of the mutation in number of nucleotides.
@@ -242,6 +251,7 @@ clinical_augment |>
 There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the linear model fitting above.
 
 ```{r}
+#| message: false
 patient_mutation_summary |> 
     filter(cancer_type == "Renal Cell Carcinoma") |> 
     ggplot(aes(x = mean_length_mutation,

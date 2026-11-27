@@ -10,11 +10,11 @@ The following code is the implementation of the augmentation steps of this proje
 ## Loading libraries and the data 
 ```{r}
 #| message: false
-library(here)
-library(dplyr)
-library(ggplot2)
-library(tidyr)
+library("tidyverse")
+library("here")
+```
 
+```{r}
 load(here("data", "02_cancer_clean.RData"))
 ```
 

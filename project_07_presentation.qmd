@@ -1,13 +1,7 @@
 ---
-<<<<<<< HEAD
-title: "project_07_presentation"
-authors: ...
-format:
-=======
 title: "Project 07 presentation"
-authors: ... Luka Falk Jørgensen (s245750), Nikolaj Krog (s245342) ...
-format: 
->>>>>>> main
+authors: ...Luka Falk Jørgensen (s245750),Nikolaj Krog (s245342),Béatrice Maulaz (s261794)...
+format:
   revealjs:
     theme: solarized
     slide-number: true
@@ -51,6 +45,7 @@ by (MSK, Nat Genet 2019)
 
 ::: column
 ``` r
+# Factors
 patients_clean <- patients_clean |> 
                     mutate(age_group = factor(age_group,
                                               levels = c("<30",
@@ -58,7 +53,7 @@ patients_clean <- patients_clean |>
                                                         "50-60",
                                                         "61-70",
                                                         ">71")))
-
+# Match variable names
 mutations_clean <- mutations_clean |> 
                       mutate(patient_id = str_sub(Tumor_Sample_Barcode, 
                                                   start = 1, 
@@ -66,6 +61,11 @@ mutations_clean <- mutations_clean |>
                       mutate(tumor_barcode = str_sub(Tumor_Sample_Barcode, 
                                                             start = 11),
                              .keep = "unused") |> ...
+
+# Inner_join to keep variables of both tables for patients appearing in both            
+
+cancer_clean <- patients_clean |> 
+                  inner_join(samples_clean, join_by("patient_id"))
 ```
 :::
 
@@ -82,19 +82,6 @@ mutation_augment <- mutations |>
 ```
 
 ## Descriptive overview
-
--   What have we done? What does our data look like
-
--   What can we use this data for? (show plots on next slide)
-
-## Survival
-
-Put different interesting and aesthetically pleasing plots here
-
-Possibly add more slides if we have a lot of plots we want to show off
-
-## Mutations
-
 ::::: columns
 ::: {.column width="35%" smaller=""}
 Number of mutations on different chromosomes
@@ -103,8 +90,6 @@ Number of mutations on different chromosomes
 
 Patient survival months, based on length of mutations
 :::
-
-::: {.column width="65%"}
 ```{r}
 #| fig-height: 4
 
@@ -124,10 +109,40 @@ clinical_mutation |>
        fill = "Age group",
        title = "Location of mutations in chromosomes")
 ```
+-   What have we done? What does our data look like
 
+-   What can we use this data for? (show plots on next slide)
+:::::
+## Survival
+
+Put different interesting and aesthetically pleasing plots here
+
+Possibly add more slides if we have a lot of plots we want to show off
+
+## Mutation length and survival
+::::: columns
+::: {.column width="35%" smaller=""}
+- Keeping deceased patients only
+- Fitted a linear model
+- Focus on Renal Cell Carcinoma
+- Correlation between length of mutations and survival ?
+:::
+::: {.column width="65%"}
+```{r}
+#| echo: false
+#| message: false
+
+library(here)
+library(gt)
+
+readRDS(here("data", "summary_lm.rds")) |> 
+  gt(rowname_col = "cancer_type") |> 
+  tab_header(title = md("Statistical summaries of linear regression")) |> 
+  tab_options(table.align = "right")
+```
 ```{r}
 #| fig-height: 3.5
-
+#| fig-align: right
 
 library(tidyverse)
 library(here)
@@ -153,7 +168,6 @@ patient_mutation_summary |>
 ```
 :::
 :::::
-
 ## PCA
 
 ::::: columns
