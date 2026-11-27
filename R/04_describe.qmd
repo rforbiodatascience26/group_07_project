@@ -12,11 +12,13 @@ The aim of the following code is to broadly describe the data before diving into
 
 ```{r}
 #| message: false
-library(here)
-library(dplyr)
-library(ggplot2)
-library(patchwork)
+library("tidyverse")
+library("here")
+library("patchwork")
+library("gt")
+```
 
+```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
 
@@ -74,6 +76,7 @@ clinical_augment |>
   group_by(sex) |> 
   mutate(percentage = (n/sum(n))*100)
 ```
+
 The patients in this study are about two thirds men to one third women, with roughly a 50% survival rate, though survival of women is slightly lower than that of men on first inspection.
 
 ```{r}
@@ -103,7 +106,7 @@ p2 <- ggplot(data = clinical_augment,
 p1+p2+ plot_layout(widths = c(1, 5))
 ```
 
-Few patients are under 30 years old, with most in the 61-70 age group. **WHAT CAN BE SAID ABOUT THE POSITION OF THE DOTS ON THE GRID ?**
+It is apparent that few patients are under 30 years old, with most in the 61-70 age group. This can also be seen via the bubbles on the right. Fewer female patients can be seen than males based on the bubble sizes, and the distribution of the age groups are also showing, that there are few patients in the \<30 age group, and most of the patients are found in the 61-70 age group.
 
 ```{r}
 clinical_augment |> 
@@ -121,7 +124,9 @@ clinical_augment |>
        title = "Number of patients affected by each type of cancer")
 ```
 
-Eleven types of cancer are tracked in this data set, two of which (breast cancer and skin cancer, non-melanoma) affect only women or men respectively. Only one patient is affected by skin cancer.
+Eleven types of cancer are tracked in this data set, two of which (breast cancer and skin cancer, non-melanoma) affect only women or men respectively. Only one patient is affected by skin cancer, non-melanoma.
+
+Below we have ordered the number of samples from each cancer type, disregarding gender.
 
 ```{r}
 clinical_augment |>
@@ -135,8 +140,10 @@ clinical_augment |>
        title = "Number of samples per cancer type")
 ```
 
+We have now made a point plot showing the average survival for each cancer type, compared to age groups.
 
 ```{r}
+#| message: false
 clinical_augment |> 
   filter(status == "DECEASED") |> 
   group_by(age_group, cancer_type) |>
@@ -153,7 +160,7 @@ clinical_augment |>
        title = "Average survival per cancer type")
 ```
 
-Across age groups, melanoma and renal cell carcinoma are associated with higher survival than other cancer types, expect for the \<30 age group, where renal cell carcinoma is associated with the shortest survival time. The majority of cancer types seem to have an average survival time between 5 and 15 months. Patients under 30 years old have the shortest average survival time, while the patients between 50 and 60 have the longest on average.
+Across age groups, melanoma and renal cell carcinoma are associated with higher survival than other cancer types, except for the \<30 age group, where renal cell carcinoma is associated with the shortest survival time. The majority of cancer types seem to have an average survival time between 5 and 15 months. Patients under 30 years old have the shortest average survival time, while the patients between 50 and 60 have the longest on average.
 
 #### Exploring the types of mutations
 
@@ -177,8 +184,7 @@ ggplot(data = clinical_augment,
   theme(legend.position = "none")
 ```
 
-**EXPLANATION**
-There seems to be no evident correlation between the age and the survival months.
+From this plot, we can see which cancer types have the most mutations, with each individual patient representing a dot in the plot. Types such as melanoma, colorectal cancer, bladder cancer and non-small cell lung cancer show a higher number of mutations than the others. Since renal cell carcinoma and melanoma was some of the were associated with the longer survival periods, there does not seem to be a correlation between a low number of mutations and a longer survival period, since types like melanoma shows a longer survival period, with a lot more mutations.
 
 ```{r}
 clinical_mutation |> 
@@ -207,7 +213,8 @@ mutation_augment |>
   summarise(mean = mean(nbr_occurences),
             max = max(nbr_occurences),
             min = min(nbr_occurences),
-            median = median(nbr_occurences))
+            median = median(nbr_occurences)) |> 
+  gt()
 ```
 
 This table summarizes the number of mutations affecting each gene. This shows the considerable variation in how genes are affected in all types of cancer.
@@ -226,4 +233,5 @@ clinical_mutation |>
        fill = "Age group",
        title = "Location of mutations in chromosomes")
 ```
+
 This graph shows the location of the mutations with respect to the chromosomes. The most affected chromosome is number 17, while the least affected is number 21. There are no mutations associated to the Y chromosome in this data set. Age does not seem to have much impact on the location of the mutation.
