@@ -25,10 +25,9 @@ load(here("data", "03_cancer_augment.RData"))
 
 ## Analysis of survival based on cancer type
 
-First, the percentage of survival for all cancer types is compared between men and women. \
-#### Boxplot of the survival for each type of cancer
+First, the percentage of survival for all cancer types is compared between men and women.
 
-To give an overview of the different cancer types.
+To give an overview of the different cancer types, below is a boxplot of the survival for each type.
 
 ```{r}
 g1 <- ggplot(data = clinical_augment,
@@ -41,7 +40,7 @@ g1 <- ggplot(data = clinical_augment,
 g1
 ```
 
-Col-plot of the survival chance for each cancer type, grouped by sex.
+Here, we have constructed a col-plot of the survival chance for all cancer types, grouped by sex.
 
 ```{r}
 clinical_augment |> 
@@ -53,7 +52,7 @@ clinical_augment |>
                        y = survival_percent,
                        fill = sex)) + 
   geom_col(position = 'dodge')+
-  labs (title = 'Survival percentage for each cancer type',
+  labs (title = 'Survival percentage for all cancer types',
         x = 'Sex',
         y = 'Survival percent (%)')+
   theme_minimal()+
@@ -63,11 +62,11 @@ clinical_augment |>
 
 ```
 
-There is no notable difference between the survival of men or women when looking at all cancer types.
+There is little to no notable difference between the survival of men or women when looking at all cancer types.
 
-This show that the cancer with the lowest survival rate is glioma, followed by breast cancer.\
-The highest chance of survival is for Skin-cancer, non-melanoma (this is only for 1 patient how survived, so is not a good sample size for this kind).\
-Disregarding the odd one, the one of the collectively highest survival percentage is the melanoma.
+We have now done the same col-plot but for each cancer type. This shows that the cancer with the lowest survival rate is glioma, followed by breast cancer.\
+The highest chance of survival is for Skin-cancer, non-melanoma (This is only for 1 patient who survived, so is not a good, representative sample size).\
+Disregarding the odd one, the type with the collectively highest survival percentage is melanoma.
 
 ```{r}
 #| message: false
@@ -91,10 +90,10 @@ clinical_augment |>
 
 ```
 
-The different survival rate for each cancer type, also depending on the sex.\
+The different survival rate for each cancer type, also depends on the gender of the patient.\
 This show that glioma has the lowest, and that melanoma has one of the highest survival rate.
 
-Skin cancer, Non-melanoma has a survival rate of 100%, because there is only data from one patient makes it misleading.
+Skin cancer, Non-melanoma has a survival rate of 100%, because there is only data from one patient, making it misleading.
 
 ```{r}
 survival_curve_test <- clinical_augment |> 
@@ -135,7 +134,7 @@ g1 <- ggplot(data = survival_curve_test,
 g1
 ```
 
-This is survival probability over time for each cancer types. Showing that the type have a big impact in length and probability of survival.
+This is a survival probability curve over time for each cancer type. This curve shows that the survival of the patient heavily depends on the individual types of cancer. To highlight some of the types with the greatest differences, below is the same curve, where only two cancer types are shown.
 
 ```{r}
 
@@ -157,11 +156,9 @@ g1 <- ggplot(data = survival_curve_test |>
 g1
 ```
 
-To look more closely on two quite different, we have chosen glioma, one of the lowest survival percentage, and melanoma, one of the highest survival percentage.
+To look more closely on two quite different cancer types, in terms of survivability, we have shown glioma with one of the lowest survival percentages, and melanoma with one of the highest survival percentages.
 
-Here it is more clear, that the type of cancer impacts survival a lot.
-
-In the melanoma case, some stayed and survived all the way, while with glioma the people surviving the cancer where done with the follow-up earlier than for melanoma(?)
+Here it is more clear, that the type of cancer impacts survival quite a lot.
 
 In the rest of this analysis, the focus is put on survival of patients who died during the study, as survival for living patients represents their last recorded follow-up appointment.
 
@@ -238,7 +235,7 @@ patient_mutation_estimate |>
   tab_header(title = md("Statistical summaries of linear regression"))
 ```
 
-According to the statistical summaries computed here, only Renal Cell Carcinoma shows a correlation between the number of month the patients survived and the length of the mutation in number of nucleotides.
+According to the statistical summaries computed here, only Renal Cell Carcinoma shows a correlation between the number of month the patients survived and the length of the mutation in number of nucleotides. This is due to the significantly low p-value.
 
 ```{r}
 clinical_augment |> 
@@ -248,7 +245,7 @@ clinical_augment |>
   count()
 ```
 
-There are 143 patient who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the linear model fitting above.
+There are 143 (54 + 89) patients who were diagnosed with Renal Cell Carcinoma, 54 of whom are included in the linear model fitting above.
 
 ```{r}
 #| message: false
