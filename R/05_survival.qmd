@@ -73,10 +73,11 @@ clinical_augment |>
   summarise(number_of_patients = n(),
   average_survival = mean(os_months, na.rm = TRUE),
   alive = sum(status == 'LIVING', na.rm = TRUE),
-  survival_percent = alive / number_of_patients * 100) |> 
+  survival_percent = alive / number_of_patients * 100,
+  .groups = 'drop') |> 
   ggplot(mapping = aes(x = cancer_type,
                        y = survival_percent,
-                       fill = sex)) + 
+                       fill = sex)) +
   geom_col(position = 'dodge')+
   labs (title = 'Survival percentage for each cancer type',
         x = 'Cancer type',
@@ -84,16 +85,18 @@ clinical_augment |>
   theme_minimal()+
   theme(axis.text.x = element_text(
     angle = 20,
-    hjust = 0.75))
+    hjust = 0.75),
+    legend.position = 'bottom')
 
 ```
 
-The different survival rate for each cancer type, also depending on the sex. \
+The different survival rate for each cancer type, also depending on the sex.\
 This show that glioma has the lowest, and that melanoma has one of the highest survival rate.
 
 Skin cancer, Non-melanoma has a survival rate of 100%, because there is only data from one patient makes it misleading.
 
 ```{r}
+#survival curve for all the cancer types
 survival_curve_test <- clinical_augment |> 
   group_by(cancer_type,os_months) |> 
   summarise(
@@ -135,9 +138,7 @@ g1
 This is survival probability over time for each cancer types. Showing that the type have a big impact in length and probability of survival.
 
 ```{r}
-
-
-#survival_curve_test
+#survival curve for only 2 cancer types - the lowest and one of the higest survival rate
 g1 <- ggplot(data = survival_curve_test |> 
              filter(cancer_type %in% c('Melanoma','Glioma')),
              mapping = aes(x = os_months,
