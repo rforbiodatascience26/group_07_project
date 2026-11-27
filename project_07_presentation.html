@@ -391,11 +391,32 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Project 07 presentation</h1>
+  <p class="subtitle">Data from various cancer types</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-…Luka Falk Jørgensen (s245750),Nikolaj Krog (s245342),Béatrice Maulaz (s261794)… 
+Arthur (s263495??)(s263500??) 
+</div>
+</div>
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Béatrice Maulaz Floriane (s261794) 
+</div>
+</div>
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Filipos (s263495??)(s263500??) 
+</div>
+</div>
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Luka Falk Jørgensen (s245750) 
+</div>
+</div>
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Nikolaj Krog (s245342) 
 </div>
 </div>
 </div>
@@ -429,27 +450,21 @@
 <li><p>Joined patients and samples table by patient_id</p></li>
 </ul>
 </div><div class="column">
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="co"># Factors</span></span>
-<span id="cb1-2"><a href=""></a>patients_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
-<span id="cb1-3"><a href=""></a>                    <span class="fu">mutate</span>(<span class="at">age_group =</span> <span class="fu">factor</span>(age_group,</span>
-<span id="cb1-4"><a href=""></a>                                              <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"&lt;30"</span>,</span>
-<span id="cb1-5"><a href=""></a>                                                        <span class="st">"31-50"</span>,</span>
-<span id="cb1-6"><a href=""></a>                                                        <span class="st">"50-60"</span>,</span>
-<span id="cb1-7"><a href=""></a>                                                        <span class="st">"61-70"</span>,</span>
-<span id="cb1-8"><a href=""></a>                                                        <span class="st">"&gt;71"</span>)))</span>
-<span id="cb1-9"><a href=""></a><span class="co"># Match variable names</span></span>
-<span id="cb1-10"><a href=""></a>mutations_clean <span class="ot">&lt;-</span> mutations_clean <span class="sc">|&gt;</span> </span>
-<span id="cb1-11"><a href=""></a>                      <span class="fu">mutate</span>(<span class="at">patient_id =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
-<span id="cb1-12"><a href=""></a>                                                  <span class="at">start =</span> <span class="dv">1</span>, </span>
-<span id="cb1-13"><a href=""></a>                                                  <span class="at">end =</span> <span class="dv">9</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb1-14"><a href=""></a>                      <span class="fu">mutate</span>(<span class="at">tumor_barcode =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
-<span id="cb1-15"><a href=""></a>                                                            <span class="at">start =</span> <span class="dv">11</span>),</span>
-<span id="cb1-16"><a href=""></a>                             <span class="at">.keep =</span> <span class="st">"unused"</span>) <span class="sc">|&gt;</span> ...</span>
-<span id="cb1-17"><a href=""></a></span>
-<span id="cb1-18"><a href=""></a><span class="co"># Inner_join to keep variables of both tables for patients appearing in both            </span></span>
-<span id="cb1-19"><a href=""></a></span>
-<span id="cb1-20"><a href=""></a>cancer_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
-<span id="cb1-21"><a href=""></a>                  <span class="fu">inner_join</span>(samples_clean, <span class="fu">join_by</span>(<span class="st">"patient_id"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>patients_clean <span class="ot">&lt;-</span> patients_clean <span class="sc">|&gt;</span> </span>
+<span id="cb1-2"><a href=""></a>              <span class="fu">mutate</span>(<span class="at">age_group =</span> <span class="fu">factor</span>(age_group,</span>
+<span id="cb1-3"><a href=""></a>                                        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"&lt;30"</span>,</span>
+<span id="cb1-4"><a href=""></a>                                                  <span class="st">"31-50"</span>,</span>
+<span id="cb1-5"><a href=""></a>                                                  <span class="st">"50-60"</span>,</span>
+<span id="cb1-6"><a href=""></a>                                                  <span class="st">"61-70"</span>,</span>
+<span id="cb1-7"><a href=""></a>                                                  <span class="st">"&gt;71"</span>)))</span>
+<span id="cb1-8"><a href=""></a></span>
+<span id="cb1-9"><a href=""></a>mutations_clean <span class="ot">&lt;-</span> mutations_clean <span class="sc">|&gt;</span> </span>
+<span id="cb1-10"><a href=""></a>                <span class="fu">mutate</span>(<span class="at">patient_id =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
+<span id="cb1-11"><a href=""></a>                                            <span class="at">start =</span> <span class="dv">1</span>, </span>
+<span id="cb1-12"><a href=""></a>                                            <span class="at">end =</span> <span class="dv">9</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-13"><a href=""></a>                <span class="fu">mutate</span>(<span class="at">tumor_barcode =</span> <span class="fu">str_sub</span>(Tumor_Sample_Barcode, </span>
+<span id="cb1-14"><a href=""></a>                                                      <span class="at">start =</span> <span class="dv">11</span>),</span>
+<span id="cb1-15"><a href=""></a>                       <span class="at">.keep =</span> <span class="st">"unused"</span>) <span class="sc">|&gt;</span> ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></section>
 <section id="data-wrangling" class="slide level2">
 <h2>Data wrangling</h2>
@@ -462,11 +477,8 @@
 <section id="descriptive-overview" class="slide level2">
 <h2>Descriptive overview</h2>
 <div class="columns">
-<div class="column" data-smaller="" style="width:35%;">
-<p>Number of mutations on different chromosomes</p>
-<hr>
-<p>Patient survival months, based on length of mutations</p>
-</div><div class="cell">
+<div class="column" style="width:50%;">
+<div class="cell" data-messange="false">
 <div class="cell-output-display">
 <div>
 <figure>
@@ -474,16 +486,78 @@
 </figure>
 </div>
 </div>
-</div><ul>
-<li><p>What have we done? What does our data look like</p></li>
-<li><p>What can we use this data for? (show plots on next slide)</p></li>
-</ul>
 </div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-2-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><p>Mutations</p>
+<ul>
+<li><p>Frequency</p></li>
+<li><p>Placement</p></li>
+</ul></li>
+<li><p>Survival</p>
+<ul>
+<li>Gender, age</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-3-1.svg" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
 </section>
-<section id="survival" class="slide level2">
-<h2>Survival</h2>
-<p>Put different interesting and aesthetically pleasing plots here</p>
-<p>Possibly add more slides if we have a lot of plots we want to show off</p>
+<section id="survival-rate" class="slide level2">
+<h2>Survival rate</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Skin Cancer, Non-Melanoma</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-4-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+<ul>
+<li><p>Glioma</p></li>
+<li><p>Melanoma</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-5-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-5-2.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
 </section>
 <section id="mutation-length-and-survival" class="slide level2">
 <h2>Mutation length and survival</h2>
@@ -498,565 +572,10 @@
 </div><div class="column" style="width:65%;">
 <div class="cell">
 <div class="cell-output-display">
-<div id="mdmqucpzjr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#mdmqucpzjr table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#mdmqucpzjr thead, #mdmqucpzjr tbody, #mdmqucpzjr tfoot, #mdmqucpzjr tr, #mdmqucpzjr td, #mdmqucpzjr th {
-  border-style: none;
-}
-
-#mdmqucpzjr p {
-  margin: 0;
-  padding: 0;
-}
-
-#mdmqucpzjr .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: 0;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#mdmqucpzjr .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#mdmqucpzjr .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#mdmqucpzjr .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#mdmqucpzjr .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#mdmqucpzjr .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#mdmqucpzjr .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#mdmqucpzjr .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#mdmqucpzjr .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#mdmqucpzjr .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#mdmqucpzjr .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#mdmqucpzjr .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#mdmqucpzjr .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#mdmqucpzjr .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#mdmqucpzjr .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#mdmqucpzjr .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#mdmqucpzjr .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#mdmqucpzjr .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#mdmqucpzjr .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#mdmqucpzjr .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#mdmqucpzjr .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#mdmqucpzjr .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#mdmqucpzjr .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#mdmqucpzjr .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#mdmqucpzjr .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#mdmqucpzjr .gt_left {
-  text-align: left;
-}
-
-#mdmqucpzjr .gt_center {
-  text-align: center;
-}
-
-#mdmqucpzjr .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#mdmqucpzjr .gt_font_normal {
-  font-weight: normal;
-}
-
-#mdmqucpzjr .gt_font_bold {
-  font-weight: bold;
-}
-
-#mdmqucpzjr .gt_font_italic {
-  font-style: italic;
-}
-
-#mdmqucpzjr .gt_super {
-  font-size: 65%;
-}
-
-#mdmqucpzjr .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#mdmqucpzjr .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#mdmqucpzjr .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#mdmqucpzjr .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#mdmqucpzjr .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#mdmqucpzjr .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#mdmqucpzjr .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#mdmqucpzjr .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#mdmqucpzjr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-
-<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead>
-<tr class="header gt_heading">
-<th colspan="7" class="gt_heading gt_title gt_font_normal gt_bottom_border">Statistical summaries of linear regression</th>
-</tr>
-<tr class="odd gt_col_headings">
-<th id="a::stub" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
-<th id="p.value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">p.value</th>
-<th id="estimate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">estimate</th>
-<th id="conf.low" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">conf.low</th>
-<th id="conf.high" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">conf.high</th>
-<th id="q.value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">q.value</th>
-<th id="is_significant" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">is_significant</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Breast Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_1 p.value">0.587587097</td>
-<td class="gt_row gt_right" headers="stub_1_1 estimate">-0.063828459</td>
-<td class="gt_row gt_right" headers="stub_1_1 conf.low">-0.30242544</td>
-<td class="gt_row gt_right" headers="stub_1_1 conf.high">0.17476853</td>
-<td class="gt_row gt_right" headers="stub_1_1 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_1 is_significant">no</td>
-</tr>
-<tr class="even">
-<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Esophagogastric Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_2 p.value">0.105459144</td>
-<td class="gt_row gt_right" headers="stub_1_2 estimate">-1.206920084</td>
-<td class="gt_row gt_right" headers="stub_1_2 conf.low">-2.67682744</td>
-<td class="gt_row gt_right" headers="stub_1_2 conf.high">0.26298727</td>
-<td class="gt_row gt_right" headers="stub_1_2 q.value">0.35153048</td>
-<td class="gt_row gt_left" headers="stub_1_2 is_significant">no</td>
-</tr>
-<tr class="odd">
-<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Bladder Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_3 p.value">0.641154942</td>
-<td class="gt_row gt_right" headers="stub_1_3 estimate">-0.009290661</td>
-<td class="gt_row gt_right" headers="stub_1_3 conf.low">-0.04875810</td>
-<td class="gt_row gt_right" headers="stub_1_3 conf.high">0.03017677</td>
-<td class="gt_row gt_right" headers="stub_1_3 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_3 is_significant">no</td>
-</tr>
-<tr class="even">
-<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Non-Small Cell Lung Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_4 p.value">0.589687617</td>
-<td class="gt_row gt_right" headers="stub_1_4 estimate">-0.063448685</td>
-<td class="gt_row gt_right" headers="stub_1_4 conf.low">-0.29501442</td>
-<td class="gt_row gt_right" headers="stub_1_4 conf.high">0.16811705</td>
-<td class="gt_row gt_right" headers="stub_1_4 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_4 is_significant">no</td>
-</tr>
-<tr class="odd">
-<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Glioma</td>
-<td class="gt_row gt_right" headers="stub_1_5 p.value">0.399262432</td>
-<td class="gt_row gt_right" headers="stub_1_5 estimate">0.031836024</td>
-<td class="gt_row gt_right" headers="stub_1_5 conf.low">-0.04288726</td>
-<td class="gt_row gt_right" headers="stub_1_5 conf.high">0.10655931</td>
-<td class="gt_row gt_right" headers="stub_1_5 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_5 is_significant">no</td>
-</tr>
-<tr class="even">
-<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Head and Neck Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_6 p.value">0.678544201</td>
-<td class="gt_row gt_right" headers="stub_1_6 estimate">-0.136181845</td>
-<td class="gt_row gt_right" headers="stub_1_6 conf.low">-0.78865992</td>
-<td class="gt_row gt_right" headers="stub_1_6 conf.high">0.51629624</td>
-<td class="gt_row gt_right" headers="stub_1_6 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_6 is_significant">no</td>
-</tr>
-<tr class="odd">
-<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Melanoma</td>
-<td class="gt_row gt_right" headers="stub_1_7 p.value">0.710418053</td>
-<td class="gt_row gt_right" headers="stub_1_7 estimate">-0.017008199</td>
-<td class="gt_row gt_right" headers="stub_1_7 conf.low">-0.10748965</td>
-<td class="gt_row gt_right" headers="stub_1_7 conf.high">0.07347325</td>
-<td class="gt_row gt_right" headers="stub_1_7 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_7 is_significant">no</td>
-</tr>
-<tr class="even">
-<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Colorectal Cancer</td>
-<td class="gt_row gt_right" headers="stub_1_8 p.value">0.516379971</td>
-<td class="gt_row gt_right" headers="stub_1_8 estimate">-0.226537459</td>
-<td class="gt_row gt_right" headers="stub_1_8 conf.low">-0.92507850</td>
-<td class="gt_row gt_right" headers="stub_1_8 conf.high">0.47200358</td>
-<td class="gt_row gt_right" headers="stub_1_8 q.value">0.71041805</td>
-<td class="gt_row gt_left" headers="stub_1_8 is_significant">no</td>
-</tr>
-<tr class="odd">
-<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Renal Cell Carcinoma</td>
-<td class="gt_row gt_right" headers="stub_1_9 p.value">0.001844174</td>
-<td class="gt_row gt_right" headers="stub_1_9 estimate">2.922539882</td>
-<td class="gt_row gt_right" headers="stub_1_9 conf.low">1.13580194</td>
-<td class="gt_row gt_right" headers="stub_1_9 conf.high">4.70927782</td>
-<td class="gt_row gt_right" headers="stub_1_9 q.value">0.01844174</td>
-<td class="gt_row gt_left" headers="stub_1_9 is_significant">yes</td>
-</tr>
-<tr class="even">
-<td id="stub_1_10" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row">Cancer of Unknown Primary</td>
-<td class="gt_row gt_right" headers="stub_1_10 p.value">0.087698586</td>
-<td class="gt_row gt_right" headers="stub_1_10 estimate">0.161107453</td>
-<td class="gt_row gt_right" headers="stub_1_10 conf.low">-0.02518610</td>
-<td class="gt_row gt_right" headers="stub_1_10 conf.high">0.34740101</td>
-<td class="gt_row gt_right" headers="stub_1_10 q.value">0.35153048</td>
-<td class="gt_row gt_left" headers="stub_1_10 is_significant">no</td>
-</tr>
-</tbody>
-</table>
-
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-6-1.svg" width="960"></p>
+</figure>
 </div>
 </div>
 </div>
@@ -1064,7 +583,7 @@
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-right">
 <figure>
-<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-3-1.svg" class="quarto-figure quarto-figure-right" width="960"></p>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-7-1.svg" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1079,7 +598,7 @@
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-4-1.svg" width="960"></p>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-8-1.svg" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1089,7 +608,7 @@
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-5-1.svg" width="960"></p>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-9-1.svg" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1098,7 +617,7 @@
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-6-1.svg" width="960"></p>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-10-1.svg" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1108,15 +627,40 @@
 <section id="heatmap" class="slide level2">
 <h2>Heatmap</h2>
 
-<img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-7-1.svg" width="960" class="r-stretch"></section>
+<img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-11-1.svg" width="960" class="r-stretch"></section>
 <section id="discussion" class="slide level2">
 <h2>Discussion</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <p>Should be seeing discussion slide</p>
 <ul>
-<li><p>What else could we have done?</p></li>
+<li><p>What else could we have done?</p>
+<ul>
+<li>Shiny app, choose the cancer type and another cofactor, get a plot out of it</li>
+</ul></li>
 <li><p>Have we represented the data in the best possible way?</p></li>
 <li><p>Are our results wierd in any way? how and why?</p></li>
 </ul>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-messange="false">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-12-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="project_07_presentation_files/figure-revealjs/unnamed-chunk-13-1.svg" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
@@ -1299,9 +843,9 @@
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1600,
+        width: 1900,
 
-        height: 900,
+        height: 1000,
 
         // Factor of the display size that should remain empty around the content
         margin: 3.0e-2,

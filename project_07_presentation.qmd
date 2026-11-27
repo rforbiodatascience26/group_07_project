@@ -1,14 +1,22 @@
 ---
-title: "Project 07 presentation"
-authors: ...Luka Falk Jørgensen (s245750),Nikolaj Krog (s245342),Béatrice Maulaz (s261794)...
-format:
-  revealjs:
-    theme: solarized
-    slide-number: true
-    width: 1600
-    height: 900
+
+title: "Project 07 presentation" 
+subtitle: 'Data from various cancer types'
+authors: 
+  - Arthur (s263495??)(s263500??)
+  - Béatrice Maulaz Floriane (s261794)
+  - Filipos (s263495??)(s263500??)
+  - Luka Falk Jørgensen (s245750)
+  - Nikolaj Krog (s245342) 
+format: 
+  revealjs: 
+    theme: solarized 
+    slide-number: true 
+    width: 1900 
+    height: 1000 
+
     margin: 0.03
-editor: visual
+editor: visual 
 ---
 
 ## Raw data
@@ -47,25 +55,20 @@ by (MSK, Nat Genet 2019)
 ``` r
 # Factors
 patients_clean <- patients_clean |> 
-                    mutate(age_group = factor(age_group,
-                                              levels = c("<30",
-                                                        "31-50",
-                                                        "50-60",
-                                                        "61-70",
-                                                        ">71")))
-# Match variable names
+              mutate(age_group = factor(age_group,
+                                        levels = c("<30",
+                                                  "31-50",
+                                                  "50-60",
+                                                  "61-70",
+                                                  ">71")))
+
 mutations_clean <- mutations_clean |> 
-                      mutate(patient_id = str_sub(Tumor_Sample_Barcode, 
-                                                  start = 1, 
-                                                  end = 9)) |> 
-                      mutate(tumor_barcode = str_sub(Tumor_Sample_Barcode, 
-                                                            start = 11),
-                             .keep = "unused") |> ...
-
-# Inner_join to keep variables of both tables for patients appearing in both            
-
-cancer_clean <- patients_clean |> 
-                  inner_join(samples_clean, join_by("patient_id"))
+                mutate(patient_id = str_sub(Tumor_Sample_Barcode, 
+                                            start = 1, 
+                                            end = 9)) |> 
+                mutate(tumor_barcode = str_sub(Tumor_Sample_Barcode, 
+                                                      start = 11),
+                       .keep = "unused") |> ...
 ```
 :::
 
@@ -82,6 +85,191 @@ mutation_augment <- mutations |>
 ```
 
 ## Descriptive overview
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| messange: false 
+library(here)
+library(tidyverse)
+load(here('data','03_cancer_augment.RData'))
+ggplot(data = clinical_augment,
+       mapping = aes(x = cancer_type,
+                     y = total_mutations,
+                     color = cancer_type)) +
+  geom_jitter() +
+    theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(title = "Cancer type and number of mutations", 
+       subtitle = "The dots indicate how many mutations the individual patient has",
+       x = "Cancer type",
+       y = "Number of mutations") +
+  theme(legend.position = "none")
+
+```
+
+```{r}
+clinical_augment |> 
+  group_by(cancer_type, sex) |> 
+  ggplot(aes(x = cancer_type,
+             fill = sex))+
+  geom_bar(alpha = 0.7)+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 45,
+    hjust = 1))+
+  labs(x = "Cancer type",
+       y = "Number of affected patients",
+       fill = "Sex",
+       title = "Number of patients affected by each type of cancer")
+```
+:::
+
+::: {.column width="50%"}
+-   Mutations
+
+    -   Frequency
+
+    -   Placement
+
+-   Survival
+
+    -   Gender, age
+
+```{r}
+#| fig-width: 9
+library(patchwork)
+p1 <- clinical_augment |> 
+        ggplot(aes(x = sex,
+                   fill = status))+
+        geom_bar(alpha = 0.5)+
+  labs(x= "",
+       y = "Number of patients",
+       fill = "Status",
+       title = "Profiles of the patients in the cancer study")+
+  theme_minimal()
+p2 <- ggplot(data = clinical_augment,
+       mapping = aes(x = status,
+                     y = sex,
+                     colour = age_group))+
+  scale_size_area(max_size = 10)+
+  geom_count(position = position_dodge(width = 0.75),
+             alpha = 0.5)+
+  labs(size = "Count",
+       x = "Status",
+       y = "",
+       colour = "Age")+
+  theme_minimal()
+
+p1+p2+ plot_layout(widths = c(1, 5))
+```
+:::
+:::::
+
+## Survival rate
+
+::::: columns
+::: {.column width="50%"}
+-   Skin Cancer, Non-Melanoma
+
+```{r}
+library(here)
+library(tidyverse)
+load(here("data", "03_cancer_augment.RData"))
+
+
+clinical_augment |> 
+  group_by(cancer_type, sex) |> 
+  summarise(number_of_patients = n(),
+  average_survival = mean(os_months, na.rm = TRUE),
+  alive = sum(status == 'LIVING', na.rm = TRUE),
+  survival_percent = alive / number_of_patients * 100,
+  .groups = 'drop') |> 
+  ggplot(mapping = aes(x = cancer_type,
+                       y = survival_percent,
+                       fill = sex)) + 
+  geom_col(position = 'dodge')+
+  labs (title = 'Survival percentage for each cancer type',
+        x = 'Cancer type',
+        y = 'Survival percent (%)')+
+  theme_minimal()+
+  theme(axis.text.x = element_text(
+    angle = 20,
+    hjust = 0.75),
+    legend.position = 'bottom')
+
+```
+
+------------------------------------------------------------------------
+
+-   Glioma
+
+-   Melanoma
+:::
+
+::: {.column width="50%"}
+```{r}
+survival_curve_test <- clinical_augment |> 
+  group_by(cancer_type,os_months) |> 
+  summarise(
+    deaths = sum(status == 'DECEASED'),
+    living = sum(status == 'LIVING'),
+    .groups = 'drop'
+  ) |> 
+  
+  arrange(cancer_type,os_months) |> 
+  
+  group_by(cancer_type) |> 
+  mutate(
+    at_risk = rev(cumsum(rev(deaths + living))),
+    survival = cumprod(1 - deaths/at_risk)
+  ) |> 
+  ungroup()
+
+
+#survival curve for all the cancer types
+g1 <- ggplot(data = survival_curve_test,
+             
+             mapping = aes(x = os_months,
+                           y = survival,
+                           color = cancer_type))+
+  geom_step()+
+  labs(title = 'Overall survival curve, by cancer type',
+       x = 'Overall survival (months)',
+       y = 'Survival probability',
+       color = 'Cancer types')+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = 'bottom')+
+  guides(
+    color = guide_legend(
+      title.position ='top'))
+g1
+
+#survival curve for only 2 cancer types - the lowest and one of the higest survival rate
+g1 <- ggplot(data = survival_curve_test |> 
+             filter(cancer_type %in% c('Melanoma','Glioma')),
+             mapping = aes(x = os_months,
+                           y = survival,
+                           color = cancer_type))+
+  geom_step()+
+  labs(title = 'Overall survival curve, by extrimaties',
+       x = 'Overall survival (months)',
+       y = 'Survival probability',
+       color = 'Cancer types')+
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = 'bottom')
+g1
+```
+:::
+:::::
+
+## Mutations
+
 ::::: columns
 ::: {.column width="35%" smaller=""}
 Number of mutations on different chromosomes
@@ -294,10 +482,71 @@ heatmap_data |>
 
 ## Discussion
 
+::::: columns
+::: {.column width="50%"}
 Should be seeing discussion slide
 
 -   What else could we have done?
 
+    -   Shiny app, choose the cancer type and another cofactor, get a plot out of it
+
 -   Have we represented the data in the best possible way?
 
 -   Are our results wierd in any way? how and why?
+:::
+
+::: {.column width="50%"}
+```{r}
+#| messange: false 
+library(here)
+library(tidyverse)
+load(here('data','03_cancer_augment.RData'))
+patient_mutation_summary |> 
+    filter(cancer_type == "Renal Cell Carcinoma") |> 
+    ggplot(aes(x = mean_length_mutation,
+               y = os_months))+
+    geom_point(alpha = 0.5)+
+    geom_smooth(method = "lm")+
+    labs(x = "Average length of mutation",
+         y = "Survival (months)",
+         title = "Survival as a function of average mutation length in patients with Renal Cell Carcinoma")+
+    theme_minimal()+
+    theme(plot.title = element_text(size = 12))
+```
+
+```{r}
+g1 <- ggplot(data = clinical_augment |> 
+      filter(cancer_type != 'Skin Cancer, Non-Melanoma'),
+       mapping = aes(x = cancer_type,
+                     y = total_mutations,
+                     color = cancer_type)) +
+  geom_jitter() +
+    theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid = element_blank()
+  ) +
+  labs(title = "Cancer type and number of mutations",
+       x = "Cancer type",
+       y = "Number of mutations") +
+  theme(legend.position = "none")
+
+g2 <- clinical_augment |> 
+  filter(status == "DECEASED") |> 
+  group_by(age_group, cancer_type) |>
+  summarise(average_survival_months = mean(os_months)) |> 
+  arrange(average_survival_months) |> 
+  ggplot(aes(x = age_group,
+             y = average_survival_months,
+             colour = cancer_type))+
+  geom_point(alpha = 0.7)+
+  theme_minimal()+
+  labs(x = "Age group",
+       y = "Average survival (months)",
+       colour = "Cancer type",
+       title = "Average survival per cancer type")
+
+g1+g2
+```
+:::
+:::::
