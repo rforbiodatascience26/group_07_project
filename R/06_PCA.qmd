@@ -9,17 +9,13 @@ Run a PCA on the number of mutations in the top 20 genes of each sample, to
 see whether cancer types or survival status form clusters, and identify genes 
 that are associated to particular types of cancer
 
-## Load libraries
+## Loading libraries and the data
 
 ```{r}
 #| message: false
-
 library("tidyverse")
 library("here")
 ```
-
-
-## Load data
 
 ```{r}
 load(here("data", "03_cancer_augment.RData"))

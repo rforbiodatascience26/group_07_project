@@ -12,11 +12,13 @@ The aim of the following code is to broadly describe the data before diving into
 
 ```{r}
 #| message: false
-library(here)
-library(dplyr)
-library(ggplot2)
-library(patchwork)
+library("tidyverse")
+library("here")
+library("patchwork")
+library("gt")
+```
 
+```{r}
 load(here("data", "03_cancer_augment.RData"))
 ```
 
@@ -137,6 +139,7 @@ clinical_augment |>
 
 
 ```{r}
+#| message: false
 clinical_augment |> 
   filter(status == "DECEASED") |> 
   group_by(age_group, cancer_type) |>
@@ -207,7 +210,8 @@ mutation_augment |>
   summarise(mean = mean(nbr_occurences),
             max = max(nbr_occurences),
             min = min(nbr_occurences),
-            median = median(nbr_occurences))
+            median = median(nbr_occurences)) |> 
+  gt()
 ```
 
 This table summarizes the number of mutations affecting each gene. This shows the considerable variation in how genes are affected in all types of cancer.
