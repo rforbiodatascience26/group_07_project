@@ -1,23 +1,24 @@
 ---
-
 title: "Project 07 presentation" 
-subtitle: 'Data from various cancer types'
+subtitle: 'Data from various cancer types' 
 authors: 
-  - Arthur (s263495??)(s263500??)
-  - Béatrice Maulaz Floriane (s261794)
-  - Filipos (s263495??)(s263500??)
-  - Luka Falk Jørgensen (s245750)
+  - Arthur (s263495??)(s263500??) 
+  - Béatrice Maulaz Floriane (s261794) 
+  - Filipos (s263495??)(s263500??) 
+  - Luka Falk Jørgensen (s245750) 
   - Nikolaj Krog (s245342) 
 format: 
   revealjs: 
     theme: solarized 
     slide-number: true 
     width: 1900 
-    height: 1000 
-
-    margin: 0.03
-editor: visual 
+    height: 1000
+margin: 0.03
 ---
+
+```         
+
+## editor: visual
 
 ## Raw data
 
@@ -70,6 +71,7 @@ mutations_clean <- mutations_clean |>
                                                       start = 11),
                        .keep = "unused") |> ...
 ```
+
 :::
 
 ## Data wrangling
@@ -270,7 +272,7 @@ g1
 
 ## Mutations
 
-::::: columns
+:::: columns
 ::: {.column width="35%" smaller=""}
 Number of mutations on different chromosomes
 
@@ -278,6 +280,7 @@ Number of mutations on different chromosomes
 
 Patient survival months, based on length of mutations
 :::
+
 ```{r}
 #| fig-height: 4
 
@@ -297,10 +300,12 @@ clinical_mutation |>
        fill = "Age group",
        title = "Location of mutations in chromosomes")
 ```
+
 -   What have we done? What does our data look like
 
 -   What can we use this data for? (show plots on next slide)
-:::::
+::::
+
 ## Survival
 
 Put different interesting and aesthetically pleasing plots here
@@ -308,13 +313,15 @@ Put different interesting and aesthetically pleasing plots here
 Possibly add more slides if we have a lot of plots we want to show off
 
 ## Mutation length and survival
+
 ::::: columns
 ::: {.column width="35%" smaller=""}
-- Keeping deceased patients only
-- Fitted a linear model
-- Focus on Renal Cell Carcinoma
-- Correlation between length of mutations and survival ?
+-   Keeping deceased patients only
+-   Fitted a linear model
+-   Focus on Renal Cell Carcinoma
+-   Correlation between length of mutations and survival ?
 :::
+
 ::: {.column width="65%"}
 ```{r}
 #| echo: false
@@ -328,6 +335,7 @@ readRDS(here("data", "summary_lm.rds")) |>
   tab_header(title = md("Statistical summaries of linear regression")) |> 
   tab_options(table.align = "right")
 ```
+
 ```{r}
 #| fig-height: 3.5
 #| fig-align: right
@@ -356,6 +364,7 @@ patient_mutation_summary |>
 ```
 :::
 :::::
+
 ## PCA
 
 ::::: columns
