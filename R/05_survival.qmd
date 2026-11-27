@@ -24,7 +24,8 @@ load(here("data", "03_cancer_augment.RData"))
 
 ## Analysis of survival based on cancer type
 
-First, the percentage of survival for all cancer types is compared between men and women. \#### Boxplot of the survival for each type of cancer
+First, the percentage of survival for all cancer types is compared between men and women. \
+#### Boxplot of the survival for each type of cancer
 
 To give an overview of the different cancer types.
 
@@ -88,7 +89,7 @@ clinical_augment |>
 
 ```
 
-The different survival rate for each cancer type, also depending on the sex. \
+The different survival rate for each cancer type, also depending on the sex.\
 This show that glioma has the lowest, and that melanoma has one of the highest survival rate.
 
 Skin cancer, Non-melanoma has a survival rate of 100%, because there is only data from one patient makes it misleading.
